@@ -1,0 +1,35 @@
+name: Daily Email Digest
+
+on:
+  schedule:
+    # 每天台灣時間 09:00 (UTC 01:00)
+    - cron: '0 1 * * *'
+  workflow_dispatch:
+    # 允許手動觸發以測試
+
+jobs:
+  email-digest:
+    name: Fetch & analyze unread emails
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install --quiet msal requests anthropic
+
+      - name: Run daily digest
+        env:
+          MS_CLIENT_ID: ${{ secrets.MS_CLIENT_ID }}
+          MS_CLIENT_SECRET: ${{ secrets.MS_CLIENT_SECRET }}
+          MS_TENANT_ID: ${{ secrets.MS_TENANT_ID }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          USER_EMAIL: joycechen@makalot.com.tw
+        run: python scripts/daily_digest.py
