@@ -1,0 +1,40 @@
+{
+  "_comment": "PJT review 信件收件人清單。改名單就改這個檔案，不用動腳本。",
+  "_format": "Outlook 接受 'Display Name <email>' 格式，多人用分號分隔。",
+
+  "arthur": {
+    "to": "Arthur",
+    "to_resolved": "Arthur Kuo (Taipei, 郭良祿)",
+    "cc": [
+      "Sofia Chen (Taipei, 陳昀昀) <sofiachen@makalot.com.tw>",
+      "Kenta Chen (Taipei, 陳韋剛) <KentaChen@makalot.com.tw>",
+      "Olga Ciou (Taipei, 邱郁婷) <OlgaCiou@makalot.com.tw>",
+      "Kai Chang (Taipei, 張凱瑩) <KaiChang@makalot.com.tw>",
+      "Joy Hsu (Taipei, 徐以恆) <JoyHsu@makalot.com.tw>",
+      "Joanne Wu (Taipei,吳欣容) <joannewu@makalot.com.tw>",
+      "Peggy Cheng (Taipei, 鄭佩文) <peggycheng@makalot.com.tw>",
+      "Rene Huang (Taipei, 黃世旻) <ReneHuang@makalot.com.tw>",
+      "Pan Yu (Taipei, 游淳喻) <PanYu@makalot.com.tw>",
+      "Claire Tsai (Taipei, 蔡萱) <clairetsai@makalot.com.tw>",
+      "Stephy Lai (Taipei, 賴姵妘) <StephyLai@makalot.com.tw>",
+      "Bruce Cheng (Taipei, 鄭凱勻) <brucecheng@makalot.com.tw>",
+      "Catherine Cheng (Taipei, 鄭凱尹) <catherinecheng@makalot.com.tw>",
+      "Kimi Hsu (Taipei, 許瑋君) <kimihsu@makalot.com.tw>",
+      "Miyabi Cheng (Taipei, 鄭雅方) <miyabicheng@makalot.com.tw>",
+      "Tanya Liu (Taipei, 劉亭昀) <tanyaliu@makalot.com.tw>",
+      "Irene Chang (Taipei, 張亞築) <irenechang@makalot.com.tw>"
+    ]
+  },
+
+  "dept": {
+    "_note": "其他部門版收件人 (Arthur 確認後再發)，不附 Q3/Q4 Buffer。",
+    "to": [
+      "Evy Chen (Taipei, 陳明慧) <Evychen@makalot.com.tw>",
+      "Matt Wang (Taipei, 王朝弘) <mattwang@makalot.com.tw>",
+      "Michelle Lu (Taipei, 陸玟瑄) <michellelu@makalot.com.tw>",
+      "Lilly Cheng (Taipei, 鄭俐俐) <lillyCheng@makalot.com.tw>",
+      "Maeve Chou (Taipei, 周襄) <maevechou@makalot.com.tw>"
+    ],
+    "cc": []
+  }
+}
