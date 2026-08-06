@@ -1,0 +1,16 @@
+# 私人內容——照片等，不進版控
+# 注意：既有的 20 張照片在本次整理前就已被追蹤，gitignore 對它們無效。
+# 要停止追蹤請執行： git rm -r --cached _private
+_private/*
+!_private/README.md
+
+# 作業系統／編輯器雜物
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+~$*
+
+# Obsidian 本機設定（各機器不同，不必同步）
+.obsidian/workspace*
+.obsidian/cache
