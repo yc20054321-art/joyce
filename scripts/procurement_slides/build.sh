@@ -18,3 +18,7 @@ python3 qa.py
 echo "== V6主採業務範疇說明 v2 (獨立檔) =="
 python3 zhucai_v2.py
 python3 $V zhucai_v2_out.pptx --original g1.pptx
+
+echo "== 主副料採購 AI 導入評估 (整合版) =="
+python3 integrate.py
+python3 $V integrated_out.pptx
