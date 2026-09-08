@@ -10,6 +10,7 @@ python3 renumber.py
 cd unpacked && rm -f ../out.pptx && zip -qXr ../out.pptx . && cd ..
 python3 $V out.pptx --original src.pptx
 
-echo "== V6副採工作範疇簡略說明 (獨立檔) =="
-python3 fucai_standalone.py
-python3 $V fucai_out.pptx --original fucai_src.pptx
+echo "== V6副採工作範疇簡略說明 v2 (獨立檔) =="
+python3 fucai_v2.py
+python3 $V fucai_v2_out.pptx --original q1.pptx
+python3 qa.py

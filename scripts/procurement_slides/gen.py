@@ -346,4 +346,5 @@ def main():
     open(pxp, "w", encoding="utf-8").write(px)
     print("inserted", list(slides), "->", newr)
 
-main()
+if __name__ == "__main__":
+    main()
