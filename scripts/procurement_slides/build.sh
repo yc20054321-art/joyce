@@ -14,3 +14,7 @@ echo "== V6副採工作範疇簡略說明 v2 (獨立檔) =="
 python3 fucai_v2.py
 python3 $V fucai_v2_out.pptx --original q1.pptx
 python3 qa.py
+
+echo "== V6主採業務範疇說明 v2 (獨立檔) =="
+python3 zhucai_v2.py
+python3 $V zhucai_v2_out.pptx --original g1.pptx
