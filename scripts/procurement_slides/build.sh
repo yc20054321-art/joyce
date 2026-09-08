@@ -1,7 +1,8 @@
 set -e
 cd "$(dirname "$0")"
-rm -rf unpacked
+rm -rf unpacked fucai_unpacked
 python3 -c "import zipfile; zipfile.ZipFile('src.pptx').extractall('unpacked')"
+python3 -c "import zipfile; zipfile.ZipFile('fucai_src.pptx').extractall('fucai_unpacked')"
 python3 gen.py
 python3 renumber.py
 cd unpacked && rm -f ../out.pptx && zip -qXr ../out.pptx . && cd ..

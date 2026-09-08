@@ -313,8 +313,9 @@ def slide_main_scope():
         s += tb(x + 0.24, 1.79, sw - 0.44, 0.40, [[run(num, 2100, 1, col)]])
         s += tb(x + 0.24, 2.21, sw - 0.44, 0.30, [[run(lab, 900, 0, BODY)]], lnspc=120)
 
-    s += tb(MARGIN_X, 2.70, CONTENT_W, 0.26,
-            [[run("十四類工作的信件量與占比 —— 占比最高的不是文書，是「重大品質異常」", 1250, 1, NAVY)]])
+    # keep this label short: the 信件數／占比 column headers sit on the same baseline
+    s += tb(MARGIN_X, 2.70, 4.00, 0.26,
+            [[run("十四類工作的信件量與占比", 1250, 1, NAVY)]])
 
     items = [
         ("前端面料開發事宜", "350", "10%", False),
@@ -475,12 +476,92 @@ def slide_main_ai():
     s += source("資料來源：主採工作內容分類與 AI 可行性分析（綜合分析表）之實際信件主旨舉例與備註欄。")
     return wrap(s)
 
+
+# ==================== 副採: import the user's own 2026-09-07 deck ====================
+FUCAI_SRC = "fucai_unpacked"          # unpacked copy of the 副採 deck
+FUCAI_SLIDES = [2, 3, 4, 5]           # its content slides (1 is that deck's own cover)
+
+# eyebrow rewritten so each page reads as part of this deck's 四、副採 section
+FUCAI_EYEBROW = {
+    2: "四、副採｜系統操作",
+    3: "四、副採｜人力處理・判斷範疇",
+    4: "四、副採｜代表性工作情境",
+    5: "四、副採｜工時特性",
+}
+WHITE_BG = ('<p:bg><p:bgPr><a:solidFill><a:srgbClr val="FFFFFF"/></a:solidFill>'
+            '<a:effectLst/></p:bgPr></p:bg>')
+
+def _first_text_runs(xml):
+    """Span of the eyebrow shape: the 2nd <p:sp> in the tree (1st is the left rail)."""
+    i = xml.find('<p:sp>'); j = xml.find('</p:sp>', i)
+    k = xml.find('<p:sp>', j); l = xml.find('</p:sp>', k)
+    return k, l
+
+
+def _fix_stat_row(xml):
+    """The source deck's 系統操作 stat row is misaligned: card 1 and card 2 overlap by
+    0.17", the three gaps differ (-0.17 / 0.37 / 0.10), and card 2's label is indented
+    0.37" instead of 0.10". Re-lay the four cards on an even grid spanning the content
+    column, and put every label back at card + 0.10"."""
+    import re
+    E = 914400.0
+    pat = re.compile(r'<a:off x="(-?\d+)" y="(-?\d+)"/><a:ext cx="(\d+)" cy="(\d+)"/>')
+    hits = [m for m in pat.finditer(xml)
+            if 1.60 <= int(m.group(2)) / E <= 1.90 and 0.60 <= int(m.group(4)) / E <= 1.00]
+    cards = [m for m in hits if int(m.group(4)) / E > 0.85]
+    labels = [m for m in hits if int(m.group(4)) / E <= 0.85]
+    if len(cards) != 4 or len(labels) != 4:
+        return xml                      # source deck changed shape; leave it alone
+
+    card_w = int(cards[0].group(3)) / E                      # 2.87"
+    gap = (CONTENT_W - card_w * 4) / 3
+    edits = {}
+    for i, m in enumerate(cards):
+        cx = MARGIN_X + i * (card_w + gap)
+        edits[m.span()] = '<a:off x="%s" y="%s"/><a:ext cx="%s" cy="%s"/>' % (
+            emu(cx), emu(1.70), m.group(3), m.group(4))
+    for i, m in enumerate(labels):
+        cx = MARGIN_X + i * (card_w + gap) + 0.10
+        edits[m.span()] = '<a:off x="%s" y="%s"/><a:ext cx="%s" cy="%s"/>' % (
+            emu(cx), emu(1.80), m.group(3), m.group(4))
+    for (s, e) in sorted(edits, reverse=True):
+        xml = xml[:s] + edits[(s, e)] + xml[e:]
+    return xml
+
+def fucai_slide(n):
+    import re
+    xml = open(os.path.join(FUCAI_SRC, "ppt/slides/slide%d.xml" % n), encoding="utf-8").read()
+
+    # this deck's slides inherit their background from the layout; pin it white like the rest
+    if "<p:bg>" not in xml:
+        xml = xml.replace("<p:spTree>", WHITE_BG + "<p:spTree>", 1)
+        # <p:bg> must precede <p:spTree> inside <p:cSld>
+        xml = xml.replace("<p:cSld name=", "<p:cSld name=", 1)
+
+    # retitle the eyebrow, collapsing its runs into one so the label reads cleanly
+    k, l = _first_text_runs(xml)
+    head = xml[k:l]
+    runs = re.findall(r"<a:r>.*?</a:r>", head, re.S)
+    if runs:
+        first = runs[0]
+        relabelled = re.sub(r"<a:t>.*?</a:t>", "<a:t>%s</a:t>" % FUCAI_EYEBROW[n], first, count=1, flags=re.S)
+        newhead = head.replace("".join(runs), relabelled)
+        xml = xml[:k] + newhead + xml[l:]
+
+    # "上一頁" pointed at the source deck's own page order
+    xml = xml.replace("見上一頁對照表", "見本章「系統操作」頁對照表")
+
+    if n == 2:
+        xml = _fix_stat_row(xml)
+    return xml
+
 # ==================== package assembly ====================
 def main():
     root = "unpacked"
     slides = {"slide16.xml": slide_main_scope(), "slide17.xml": slide_main_why(),
-              "slide18.xml": slide_main_ai(), "slide19.xml": slide_systems(),
-              "slide20.xml": slide_manual(), "slide21.xml": slide_hours()}
+              "slide18.xml": slide_main_ai()}
+    for i, n in enumerate(FUCAI_SLIDES):
+        slides["slide%d.xml" % (19 + i)] = fucai_slide(n)
     for name, xml in slides.items():
         open(os.path.join(root, "ppt/slides", name), "w", encoding="utf-8").write(xml)
         open(os.path.join(root, "ppt/slides/_rels", name + ".rels"), "w", encoding="utf-8").write(
