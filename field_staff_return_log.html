@@ -1,0 +1,476 @@
+<title>駐廠返台紀錄</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --bg:#eef1ee;
+    --surface:#ffffff;
+    --surface-alt:#e3e8e2;
+    --ink:#1a2422;
+    --ink-soft:#576460;
+    --line:#d2d9d0;
+    --line-strong:#b7c1b4;
+    --accent:#1f6f6b;
+    --accent-ink:#0f4341;
+    --accent-soft:#dcece9;
+    --warn:#b5451b;
+    --warn-soft:#f6e3da;
+    --good:#3f7d4c;
+    --good-soft:#e1eee2;
+    --shadow: 0 1px 2px rgba(20,30,28,.06), 0 8px 24px -12px rgba(20,30,28,.18);
+    font-size:15px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#111a19;
+      --surface:#182322;
+      --surface-alt:#1f2b29;
+      --ink:#e9efec;
+      --ink-soft:#a3b3ae;
+      --line:#2b3936;
+      --line-strong:#3c4d49;
+      --accent:#57c2ba;
+      --accent-ink:#bdece6;
+      --accent-soft:#213836;
+      --warn:#e2895f;
+      --warn-soft:#3a2620;
+      --good:#7ecb8b;
+      --good-soft:#1f3123;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px -12px rgba(0,0,0,.5);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#111a19;
+    --surface:#182322;
+    --surface-alt:#1f2b29;
+    --ink:#e9efec;
+    --ink-soft:#a3b3ae;
+    --line:#2b3936;
+    --line-strong:#3c4d49;
+    --accent:#57c2ba;
+    --accent-ink:#bdece6;
+    --accent-soft:#213836;
+    --warn:#e2895f;
+    --warn-soft:#3a2620;
+    --good:#7ecb8b;
+    --good-soft:#1f3123;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px -12px rgba(0,0,0,.5);
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:"IBM Plex Sans", system-ui, -apple-system, "PingFang TC", "Microsoft JhengHei", sans-serif;
+    line-height:1.5;
+  }
+  .mono{ font-family:"IBM Plex Mono", ui-monospace, SFMono-Regular, monospace; font-variant-numeric: tabular-nums; }
+
+  .wrap{ max-width:1180px; margin:0 auto; padding:28px 20px 64px; }
+
+  header.top{
+    display:flex; align-items:baseline; justify-content:space-between; gap:16px;
+    flex-wrap:wrap; margin-bottom:22px;
+  }
+  header.top h1{
+    font-size:22px; font-weight:700; margin:0; letter-spacing:.01em;
+    text-wrap:balance;
+  }
+  header.top h1 .tag{
+    display:inline-block; margin-left:10px; font-family:"IBM Plex Mono",monospace;
+    font-size:11px; font-weight:500; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--accent-ink); background:var(--accent-soft); border-radius:5px;
+    padding:3px 7px; vertical-align:2px;
+  }
+  header.top p{ margin:4px 0 0; color:var(--ink-soft); font-size:13.5px; }
+
+  .stats{
+    display:grid; grid-template-columns:repeat(auto-fit, minmax(150px,1fr));
+    gap:12px; margin-bottom:24px;
+  }
+  .stat{
+    background:var(--surface); border:1px solid var(--line); border-radius:10px;
+    padding:14px 16px; box-shadow:var(--shadow);
+  }
+  .stat .n{ font-family:"IBM Plex Mono",monospace; font-size:26px; font-weight:600; line-height:1.1; }
+  .stat .n.warn{ color:var(--warn); }
+  .stat .n.good{ color:var(--good); }
+  .stat .l{ margin-top:4px; font-size:12.5px; color:var(--ink-soft); }
+
+  .layout{ display:grid; grid-template-columns:300px 1fr; gap:20px; align-items:start; }
+  @media (max-width:820px){ .layout{ grid-template-columns:1fr; } }
+
+  .card{
+    background:var(--surface); border:1px solid var(--line); border-radius:12px;
+    box-shadow:var(--shadow);
+  }
+  .card .card-h{
+    padding:14px 16px 10px; border-bottom:1px solid var(--line);
+    font-weight:600; font-size:14.5px;
+  }
+  .card .card-b{ padding:16px; }
+
+  form.entry{ position:sticky; top:20px; }
+  form.entry .field{ margin-bottom:12px; }
+  form.entry label{
+    display:block; font-size:12px; font-weight:600; color:var(--ink-soft);
+    margin-bottom:5px; letter-spacing:.02em;
+  }
+  form.entry input, form.entry select{
+    width:100%; padding:8px 10px; border:1px solid var(--line-strong);
+    border-radius:7px; background:var(--surface); color:var(--ink);
+    font:inherit; font-size:14px;
+  }
+  form.entry input:focus, form.entry select:focus, .toolbar input:focus{
+    outline:2px solid var(--accent); outline-offset:1px; border-color:var(--accent);
+  }
+  form.entry .row2{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .btn{
+    appearance:none; border:none; cursor:pointer; font:inherit; font-weight:600;
+    border-radius:7px; padding:9px 14px; font-size:13.5px;
+  }
+  .btn-primary{ background:var(--accent); color:#fff; width:100%; }
+  .btn-primary:hover{ filter:brightness(1.06); }
+  .btn-primary:disabled{ opacity:.5; cursor:not-allowed; }
+  .btn-ghost{ background:transparent; color:var(--ink-soft); border:1px solid var(--line-strong); }
+  .btn-ghost:hover{ color:var(--ink); border-color:var(--ink-soft); }
+  .btn-sm{ padding:5px 9px; font-size:12px; border-radius:6px; }
+  .btn-link{ background:none; border:none; cursor:pointer; font:inherit; color:var(--accent-ink); font-weight:600; font-size:12.5px; padding:0; }
+  .hint{ font-size:11.5px; color:var(--ink-soft); margin-top:6px; }
+
+  .toolbar{
+    display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:12px;
+  }
+  .toolbar input[type=search]{
+    flex:1; min-width:160px; padding:8px 11px; border:1px solid var(--line-strong);
+    border-radius:7px; background:var(--surface); color:var(--ink); font:inherit; font-size:13.5px;
+  }
+  .toolbar label.chk{
+    display:flex; align-items:center; gap:6px; font-size:13px; color:var(--ink-soft);
+    white-space:nowrap;
+  }
+
+  .table-wrap{ overflow-x:auto; border:1px solid var(--line); border-radius:12px; background:var(--surface); box-shadow:var(--shadow); }
+  table{ width:100%; border-collapse:collapse; min-width:720px; }
+  thead th{
+    text-align:left; font-size:11.5px; text-transform:uppercase; letter-spacing:.06em;
+    color:var(--ink-soft); font-weight:600; padding:11px 14px; background:var(--surface-alt);
+    border-bottom:1px solid var(--line); position:sticky; top:0;
+  }
+  tbody td{ padding:11px 14px; border-bottom:1px solid var(--line); font-size:14px; vertical-align:middle; }
+  tbody tr:last-child td{ border-bottom:none; }
+  tbody tr:hover{ background:var(--surface-alt); }
+  .staff{ font-weight:600; }
+  .site{ color:var(--ink-soft); font-size:13px; }
+  .badge{
+    display:inline-flex; align-items:center; gap:5px; font-size:12px; font-weight:600;
+    padding:3px 9px; border-radius:999px; white-space:nowrap;
+  }
+  .badge.good{ background:var(--good-soft); color:var(--good); }
+  .badge.warn{ background:var(--warn-soft); color:var(--warn); }
+  .badge.neutral{ background:var(--surface-alt); color:var(--ink-soft); }
+  .badge.sample{ background:var(--accent-soft); color:var(--accent-ink); font-weight:600; }
+  .note{ color:var(--ink-soft); font-size:13px; max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .actions{ display:flex; gap:6px; white-space:nowrap; }
+  .empty{ padding:48px 20px; text-align:center; color:var(--ink-soft); font-size:14px; }
+  .edit-input{
+    width:100%; padding:6px 8px; border:1px solid var(--line-strong); border-radius:6px;
+    background:var(--surface); color:var(--ink); font:inherit; font-size:13.5px;
+  }
+  .banner{
+    background:var(--warn-soft); color:var(--warn); border-radius:9px; padding:10px 14px;
+    font-size:13px; margin-bottom:16px; display:none;
+  }
+  .banner.show{ display:block; }
+  footer.note{ margin-top:20px; font-size:12px; color:var(--ink-soft); }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>駐廠返台紀錄<span class="tag">Rotation Log</span></h1>
+      <p>記錄駐廠業務每次返台日期與回公司日期,追蹤是否已完成回報。</p>
+    </div>
+  </header>
+
+  <div id="banner" class="banner"></div>
+
+  <div class="stats" id="stats"></div>
+
+  <div class="layout">
+    <div class="card">
+      <div class="card-h">新增一筆紀錄</div>
+      <div class="card-b">
+        <form class="entry" id="entryForm">
+          <div class="field">
+            <label for="f-staff">業務姓名</label>
+            <input id="f-staff" list="staffList" required placeholder="例如：王小明" autocomplete="off">
+            <datalist id="staffList"></datalist>
+          </div>
+          <div class="field">
+            <label for="f-site">駐廠地點 / 客戶</label>
+            <input id="f-site" placeholder="例如：越南廠 / 蘇州廠">
+          </div>
+          <div class="row2">
+            <div class="field">
+              <label for="f-return">返台日期</label>
+              <input id="f-return" type="date" required>
+            </div>
+            <div class="field">
+              <label for="f-company">回公司日期</label>
+              <input id="f-company" type="date">
+            </div>
+          </div>
+          <div class="field">
+            <label for="f-note">備註</label>
+            <input id="f-note" placeholder="選填">
+          </div>
+          <button type="submit" class="btn btn-primary" id="submitBtn">新增記錄</button>
+          <div class="hint">回公司日期可先留空,回公司當天再回來按「設為今天」。</div>
+        </form>
+      </div>
+    </div>
+
+    <div>
+      <div class="toolbar">
+        <input type="search" id="search" placeholder="搜尋業務姓名或駐廠地點…">
+        <label class="chk"><input type="checkbox" id="onlyPending"> 只看尚未回報</label>
+        <button type="button" class="btn-link" id="clearSampleBtn" style="display:none;">清除示範資料</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>業務</th><th>駐廠地點</th><th>返台日期</th><th>回公司日期</th><th>天數</th><th>備註</th><th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
+        <div class="empty" id="emptyState" style="display:none;">目前還沒有紀錄，從左側表單新增第一筆吧。</div>
+      </div>
+      <footer class="note">「天數」= 已回報者為返台到回公司的間隔天數；尚未回報者為返台至今的天數。超過 1 天未回報會標示為「逾期未回報」。</footer>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const $ = (s, el) => (el||document).querySelector(s);
+  const rowsEl = $('#rows');
+  const emptyEl = $('#emptyState');
+  const statsEl = $('#stats');
+  const bannerEl = $('#banner');
+  const staffListEl = $('#staffList');
+  const clearSampleBtn = $('#clearSampleBtn');
+
+  const todayISO = () => new Date().toISOString().slice(0,10);
+  $('#f-return').value = todayISO();
+
+  function daysBetween(a, b){
+    const d1 = new Date(a+'T00:00:00Z');
+    const d2 = new Date(b+'T00:00:00Z');
+    return Math.round((d2 - d1) / 86400000);
+  }
+  function fmtDate(iso){
+    if(!iso) return '—';
+    const d = new Date(iso+'T00:00:00Z');
+    return new Intl.DateTimeFormat('zh-TW', {month:'numeric', day:'numeric', weekday:'short', timeZone:'UTC'}).format(d);
+  }
+  function escapeHtml(s){
+    return String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  let records = [];
+  let editingId = null;
+  let db = null;
+
+  function showBanner(msg){
+    bannerEl.textContent = msg;
+    bannerEl.classList.add('show');
+  }
+
+  function computeStats(list){
+    const real = list.filter(r => !r.isSample);
+    const pending = real.filter(r => !r.companyDate);
+    const overdue = pending.filter(r => daysBetween(r.returnDate, todayISO()) > 1);
+    const completed = real.filter(r => r.companyDate);
+    const avg = completed.length
+      ? (completed.reduce((s,r)=> s + daysBetween(r.returnDate, r.companyDate), 0) / completed.length)
+      : null;
+    return { total: real.length, pending: pending.length, overdue: overdue.length, avg };
+  }
+
+  function renderStats(){
+    const s = computeStats(records);
+    statsEl.innerHTML = `
+      <div class="stat"><div class="n">${s.total}</div><div class="l">總紀錄數</div></div>
+      <div class="stat"><div class="n ${s.pending? 'warn':''}">${s.pending}</div><div class="l">尚未回報人次</div></div>
+      <div class="stat"><div class="n ${s.overdue? 'warn':''}">${s.overdue}</div><div class="l">逾期未回報（＞1天）</div></div>
+      <div class="stat"><div class="n good">${s.avg===null ? '—' : s.avg.toFixed(1)+' 天'}</div><div class="l">平均回報天數</div></div>
+    `;
+  }
+
+  function updateStaffList(){
+    const names = [...new Set(records.map(r=>r.staffName).filter(Boolean))].sort();
+    staffListEl.innerHTML = names.map(n=>`<option value="${escapeHtml(n)}">`).join('');
+  }
+
+  function statusBadge(r){
+    if(!r.companyDate){
+      const d = daysBetween(r.returnDate, todayISO());
+      if(d > 1) return `<span class="badge warn">逾期未回報 · ${d}天</span>`;
+      return `<span class="badge neutral">待回報</span>`;
+    }
+    return `<span class="badge good">已回報</span>`;
+  }
+
+  function daysCell(r){
+    if(r.companyDate) return daysBetween(r.returnDate, r.companyDate) + ' 天';
+    return daysBetween(r.returnDate, todayISO()) + ' 天（累計）';
+  }
+
+  async function setField(id, patch){
+    if(!db) return;
+    try{ await db.doc('records/'+id).update(patch); }
+    catch(e){ showBanner('儲存失敗：'+ (e && e.message ? e.message : '請重試')); }
+  }
+
+  async function removeRecord(id){
+    if(!db) return;
+    if(!confirm('確定要刪除這筆紀錄嗎？')) return;
+    try{ await db.doc('records/'+id).delete(); }
+    catch(e){ showBanner('刪除失敗：'+ (e && e.message ? e.message : '請重試')); }
+  }
+
+  function renderRows(){
+    const q = $('#search').value.trim().toLowerCase();
+    const onlyPending = $('#onlyPending').checked;
+    let list = records.slice().sort((a,b) => (b.returnDate||'').localeCompare(a.returnDate||''));
+    if(q) list = list.filter(r => (r.staffName||'').toLowerCase().includes(q) || (r.site||'').toLowerCase().includes(q));
+    if(onlyPending) list = list.filter(r => !r.companyDate);
+
+    clearSampleBtn.style.display = records.some(r=>r.isSample) ? '' : 'none';
+
+    if(list.length === 0){
+      rowsEl.innerHTML = '';
+      emptyEl.style.display = 'block';
+      return;
+    }
+    emptyEl.style.display = 'none';
+
+    rowsEl.innerHTML = list.map(r => {
+      if(editingId === r.id){
+        return `<tr data-id="${r.id}">
+          <td><input class="edit-input" data-k="staffName" value="${escapeHtml(r.staffName)}"></td>
+          <td><input class="edit-input" data-k="site" value="${escapeHtml(r.site||'')}"></td>
+          <td><input class="edit-input" type="date" data-k="returnDate" value="${r.returnDate||''}"></td>
+          <td><input class="edit-input" type="date" data-k="companyDate" value="${r.companyDate||''}"></td>
+          <td class="mono">—</td>
+          <td><input class="edit-input" data-k="note" value="${escapeHtml(r.note||'')}"></td>
+          <td class="actions">
+            <button class="btn btn-sm btn-primary" data-act="save" data-id="${r.id}">儲存</button>
+            <button class="btn btn-sm btn-ghost" data-act="cancel">取消</button>
+          </td>
+        </tr>`;
+      }
+      return `<tr data-id="${r.id}">
+        <td class="staff">${escapeHtml(r.staffName)} ${r.isSample?'<span class="badge sample">示範</span>':''}</td>
+        <td class="site">${escapeHtml(r.site||'—')}</td>
+        <td class="mono">${fmtDate(r.returnDate)}</td>
+        <td class="mono">${fmtDate(r.companyDate)}</td>
+        <td class="mono">${statusBadge(r)}<br><span style="color:var(--ink-soft);font-size:11.5px;">${daysCell(r)}</span></td>
+        <td class="note" title="${escapeHtml(r.note||'')}">${escapeHtml(r.note||'—')}</td>
+        <td class="actions">
+          ${!r.companyDate ? `<button class="btn btn-sm btn-primary" data-act="today" data-id="${r.id}">設為今天</button>` : ''}
+          <button class="btn btn-sm btn-ghost" data-act="edit" data-id="${r.id}">編輯</button>
+          <button class="btn btn-sm btn-ghost" data-act="del" data-id="${r.id}">刪除</button>
+        </td>
+      </tr>`;
+    }).join('');
+  }
+
+  function renderAll(){ renderStats(); updateStaffList(); renderRows(); }
+
+  rowsEl.addEventListener('click', async (e) => {
+    const btn = e.target.closest('button');
+    if(!btn) return;
+    const act = btn.dataset.act;
+    const id = btn.dataset.id;
+    if(act === 'today'){ await setField(id, { companyDate: todayISO() }); }
+    else if(act === 'del'){ await removeRecord(id); }
+    else if(act === 'edit'){ editingId = id; renderRows(); }
+    else if(act === 'cancel'){ editingId = null; renderRows(); }
+    else if(act === 'save'){
+      const tr = btn.closest('tr');
+      const patch = {};
+      tr.querySelectorAll('.edit-input').forEach(inp => { patch[inp.dataset.k] = inp.value; });
+      if(!patch.staffName || !patch.returnDate){ showBanner('業務姓名與返台日期為必填。'); return; }
+      if(!patch.companyDate) patch.companyDate = null;
+      editingId = null;
+      await setField(id, patch);
+    }
+  });
+
+  $('#search').addEventListener('input', renderRows);
+  $('#onlyPending').addEventListener('change', renderRows);
+
+  clearSampleBtn.addEventListener('click', async () => {
+    if(!db) return;
+    if(!confirm('刪除所有示範資料？此動作無法復原。')) return;
+    const samples = records.filter(r=>r.isSample);
+    for(const r of samples){
+      try{ await db.doc('records/'+r.id).delete(); }catch(e){}
+    }
+  });
+
+  $('#entryForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if(!db){ showBanner('資料庫尚未連線，請稍候再試。'); return; }
+    const staffName = $('#f-staff').value.trim();
+    const site = $('#f-site').value.trim();
+    const returnDate = $('#f-return').value;
+    const companyDate = $('#f-company').value || null;
+    const note = $('#f-note').value.trim();
+    if(!staffName || !returnDate) return;
+
+    const submitBtn = $('#submitBtn');
+    submitBtn.disabled = true;
+    try{
+      await db.collection('records').add({
+        staffName, site, returnDate, companyDate, note,
+        createdAt: new Date().toISOString()
+      });
+      e.target.reset();
+      $('#f-return').value = todayISO();
+    }catch(err){
+      showBanner('新增失敗：' + (err && err.message ? err.message : '請重試'));
+    }finally{
+      submitBtn.disabled = false;
+    }
+  });
+
+  async function init(){
+    if(!window.claude || !window.claude.use){
+      showBanner('此工具需要在 Claude Artifact 環境中開啟才能儲存資料。');
+      renderAll();
+      return;
+    }
+    db = await window.claude.use('db');
+    if(!db){
+      showBanner('無法連線到資料庫，請重新整理頁面再試一次。');
+      renderAll();
+      return;
+    }
+    db.collection('records').orderBy('returnDate','desc').limit(500).onSnapshot(
+      (snap) => {
+        records = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        renderAll();
+      },
+      (err) => { showBanner('同步發生問題：' + (err && err.message ? err.message : '請重新整理頁面')); }
+    );
+  }
+
+  renderAll();
+  init();
+})();
+</script>
