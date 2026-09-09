@@ -239,7 +239,7 @@
     <div>
       <div class="toolbar">
         <input type="search" id="search" placeholder="搜尋業務姓名或駐廠地點…">
-        <label class="chk"><input type="checkbox" id="onlyPending"> 只看尚未述職</label>
+        <label class="chk"><input type="checkbox" id="onlyPending"> 只看未進公司述職</label>
         <button type="button" class="btn-link" id="clearSampleBtn" style="display:none;">清除示範資料</button>
       </div>
       <div class="table-wrap">
@@ -253,7 +253,7 @@
         </table>
         <div class="empty" id="emptyState" style="display:none;">目前還沒有紀錄，從左側表單新增第一筆吧。</div>
       </div>
-      <footer class="note">述職日 = 業務返台後回公司報到、可安排面談的日子。休假天數已自動扣除週日與述職日當天。述職日超過返台後 1 天仍未填寫,會標示為「逾期未述職」。</footer>
+      <footer class="note">述職日 = 業務返台後回公司報到、可安排面談的日子；沒有述職日代表這次沒有進公司，屬於正常情況。休假天數已自動扣除週日與述職日當天。</footer>
     </div>
   </div>
 </div>
@@ -313,19 +313,17 @@
 
   function computeStats(list){
     const real = list.filter(r => !r.isSample);
-    const pending = real.filter(r => !r.debriefDate);
-    const overdue = pending.filter(r => daysBetween(r.returnDate, todayISO()) > 1);
+    const noDebrief = real.filter(r => !r.debriefDate);
     const withLeave = real.map(leaveDays).filter(n => n !== null);
     const avgLeave = withLeave.length ? (withLeave.reduce((a,b)=>a+b,0) / withLeave.length) : null;
-    return { total: real.length, pending: pending.length, overdue: overdue.length, avgLeave };
+    return { total: real.length, noDebrief: noDebrief.length, avgLeave };
   }
 
   function renderStats(){
     const s = computeStats(records);
     statsEl.innerHTML = `
       <div class="stat"><div class="n">${s.total}</div><div class="l">總紀錄數</div></div>
-      <div class="stat"><div class="n ${s.pending? 'warn':''}">${s.pending}</div><div class="l">尚未述職人次</div></div>
-      <div class="stat"><div class="n ${s.overdue? 'warn':''}">${s.overdue}</div><div class="l">逾期未述職（＞1天）</div></div>
+      <div class="stat"><div class="n">${s.noDebrief}</div><div class="l">未進公司述職人次</div></div>
       <div class="stat"><div class="n good">${s.avgLeave===null ? '—' : s.avgLeave.toFixed(1)+' 天'}</div><div class="l">平均休假天數</div></div>
     `;
   }
@@ -336,11 +334,7 @@
   }
 
   function statusBadge(r){
-    if(!r.debriefDate){
-      const d = daysBetween(r.returnDate, todayISO());
-      if(d > 1) return `<span class="badge warn">逾期未述職 · ${d}天</span>`;
-      return `<span class="badge neutral">待述職</span>`;
-    }
+    if(!r.debriefDate) return `<span class="badge neutral">未進公司述職</span>`;
     return `<span class="badge good">已述職</span>`;
   }
 
