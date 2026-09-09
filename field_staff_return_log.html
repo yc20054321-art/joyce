@@ -354,7 +354,7 @@
   function renderRows(){
     const q = $('#search').value.trim().toLowerCase();
     const onlyPending = $('#onlyPending').checked;
-    let list = records.slice().sort((a,b) => (b.returnDate||'').localeCompare(a.returnDate||''));
+    let list = records.slice().sort((a,b) => (a.returnDate||'').localeCompare(b.returnDate||''));
     if(q) list = list.filter(r => (r.staffName||'').toLowerCase().includes(q) || (r.site||'').toLowerCase().includes(q));
     if(onlyPending) list = list.filter(r => !r.debriefDate);
 
