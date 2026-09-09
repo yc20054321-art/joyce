@@ -163,6 +163,8 @@
   tbody tr:hover{ background:var(--surface-alt); }
   .staff{ font-weight:600; }
   .site{ color:var(--ink-soft); font-size:13px; }
+  .date-past{ color:var(--ink-soft); }
+  .date-nextweek{ color:var(--warn); font-weight:600; }
   .badge{
     display:inline-flex; align-items:center; gap:5px; font-size:12px; font-weight:600;
     padding:3px 9px; border-radius:999px; white-space:nowrap;
@@ -253,7 +255,7 @@
         </table>
         <div class="empty" id="emptyState" style="display:none;">目前還沒有紀錄，從左側表單新增第一筆吧。</div>
       </div>
-      <footer class="note">述職日 = 業務返台後回公司報到、可安排面談的日子；沒有述職日代表這次沒有進公司，屬於正常情況。休假天數已自動扣除週日與述職日當天。</footer>
+      <footer class="note">述職日 = 業務返台後回公司報到、可安排面談的日子；沒有述職日代表這次沒有進公司，屬於正常情況。休假天數已自動扣除週日與述職日當天。灰色日期代表已過去，紅色日期代表落在下週。</footer>
     </div>
   </div>
 </div>
@@ -278,6 +280,27 @@
   function fmtDate(iso){
     if(!iso) return '—';
     return new Intl.DateTimeFormat('zh-TW', {month:'numeric', day:'numeric', weekday:'short', timeZone:'UTC'}).format(toDate(iso));
+  }
+  // Next calendar week = the Mon–Sun following the current one.
+  function nextWeekRange(){
+    const today = toDate(todayISO());
+    const dow = today.getUTCDay();
+    const diffToMonday = dow === 0 ? -6 : 1 - dow;
+    const thisMonday = new Date(today); thisMonday.setUTCDate(today.getUTCDate() + diffToMonday);
+    const nextMonday = new Date(thisMonday); nextMonday.setUTCDate(thisMonday.getUTCDate() + 7);
+    const nextSunday = new Date(nextMonday); nextSunday.setUTCDate(nextMonday.getUTCDate() + 6);
+    return [nextMonday, nextSunday];
+  }
+  function dateClass(iso){
+    if(!iso) return '';
+    const d = toDate(iso);
+    if(d < toDate(todayISO())) return 'date-past';
+    const [nwStart, nwEnd] = nextWeekRange();
+    if(d >= nwStart && d <= nwEnd) return 'date-nextweek';
+    return '';
+  }
+  function dateSpan(iso){
+    return `<span class="${dateClass(iso)}">${fmtDate(iso)}</span>`;
   }
   function escapeHtml(s){
     return String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -387,9 +410,9 @@
       return `<tr data-id="${r.id}">
         <td class="staff">${escapeHtml(r.staffName)} ${r.isSample?'<span class="badge sample">示範</span>':''}</td>
         <td class="site">${escapeHtml(r.site||'—')}</td>
-        <td class="mono">${fmtDate(r.returnDate)}</td>
-        <td class="mono">${fmtDate(r.debriefDate)}<br>${statusBadge(r)}</td>
-        <td class="mono">${fmtDate(r.leaveEndDate)}</td>
+        <td class="mono">${dateSpan(r.returnDate)}</td>
+        <td class="mono">${dateSpan(r.debriefDate)}<br>${statusBadge(r)}</td>
+        <td class="mono">${dateSpan(r.leaveEndDate)}</td>
         <td class="mono">${ld===null ? '—' : ld+' 天'}</td>
         <td class="note" title="${escapeHtml(r.note||'')}">${escapeHtml(r.note||'—')}</td>
         <td class="actions">
