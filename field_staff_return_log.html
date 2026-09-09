@@ -66,7 +66,7 @@
   }
   .mono{ font-family:"IBM Plex Mono", ui-monospace, SFMono-Regular, monospace; font-variant-numeric: tabular-nums; }
 
-  .wrap{ max-width:1180px; margin:0 auto; padding:28px 20px 64px; }
+  .wrap{ max-width:1240px; margin:0 auto; padding:28px 20px 64px; }
 
   header.top{
     display:flex; align-items:baseline; justify-content:space-between; gap:16px;
@@ -82,7 +82,7 @@
     color:var(--accent-ink); background:var(--accent-soft); border-radius:5px;
     padding:3px 7px; vertical-align:2px;
   }
-  header.top p{ margin:4px 0 0; color:var(--ink-soft); font-size:13.5px; }
+  header.top p{ margin:4px 0 0; color:var(--ink-soft); font-size:13.5px; max-width:60ch; }
 
   .stats{
     display:grid; grid-template-columns:repeat(auto-fit, minmax(150px,1fr));
@@ -116,6 +116,7 @@
     display:block; font-size:12px; font-weight:600; color:var(--ink-soft);
     margin-bottom:5px; letter-spacing:.02em;
   }
+  form.entry .sub{ font-weight:400; color:var(--ink-soft); text-transform:none; letter-spacing:0; }
   form.entry input, form.entry select{
     width:100%; padding:8px 10px; border:1px solid var(--line-strong);
     border-radius:7px; background:var(--surface); color:var(--ink);
@@ -151,7 +152,7 @@
   }
 
   .table-wrap{ overflow-x:auto; border:1px solid var(--line); border-radius:12px; background:var(--surface); box-shadow:var(--shadow); }
-  table{ width:100%; border-collapse:collapse; min-width:720px; }
+  table{ width:100%; border-collapse:collapse; min-width:860px; }
   thead th{
     text-align:left; font-size:11.5px; text-transform:uppercase; letter-spacing:.06em;
     color:var(--ink-soft); font-weight:600; padding:11px 14px; background:var(--surface-alt);
@@ -189,7 +190,7 @@
   <header class="top">
     <div>
       <h1>駐廠返台紀錄<span class="tag">Rotation Log</span></h1>
-      <p>記錄駐廠業務每次返台日期與回公司日期,追蹤是否已完成回報。</p>
+      <p>記錄駐廠業務每次返台日期、述職日與返回產區日,自動算出休假天數(已扣除週日與述職日當天),方便安排與組員面談。</p>
     </div>
   </header>
 
@@ -211,14 +212,18 @@
             <label for="f-site">駐廠地點 / 客戶</label>
             <input id="f-site" placeholder="例如：越南廠 / 蘇州廠">
           </div>
+          <div class="field">
+            <label for="f-return">返台日期 <span class="sub">(離開產區)</span></label>
+            <input id="f-return" type="date" required>
+          </div>
           <div class="row2">
             <div class="field">
-              <label for="f-return">返台日期</label>
-              <input id="f-return" type="date" required>
+              <label for="f-debrief">述職日 <span class="sub">(回公司)</span></label>
+              <input id="f-debrief" type="date">
             </div>
             <div class="field">
-              <label for="f-company">回公司日期</label>
-              <input id="f-company" type="date">
+              <label for="f-leaveend">返回產區日</label>
+              <input id="f-leaveend" type="date">
             </div>
           </div>
           <div class="field">
@@ -226,7 +231,7 @@
             <input id="f-note" placeholder="選填">
           </div>
           <button type="submit" class="btn btn-primary" id="submitBtn">新增記錄</button>
-          <div class="hint">回公司日期可先留空,回公司當天再回來按「設為今天」。</div>
+          <div class="hint">述職日、返回產區日可先留空,之後再補上。休假天數 = 返台日期至返回產區日之間的天數,扣除週日與述職日。</div>
         </form>
       </div>
     </div>
@@ -234,21 +239,21 @@
     <div>
       <div class="toolbar">
         <input type="search" id="search" placeholder="搜尋業務姓名或駐廠地點…">
-        <label class="chk"><input type="checkbox" id="onlyPending"> 只看尚未回報</label>
+        <label class="chk"><input type="checkbox" id="onlyPending"> 只看尚未述職</label>
         <button type="button" class="btn-link" id="clearSampleBtn" style="display:none;">清除示範資料</button>
       </div>
       <div class="table-wrap">
         <table>
           <thead>
             <tr>
-              <th>業務</th><th>駐廠地點</th><th>返台日期</th><th>回公司日期</th><th>天數</th><th>備註</th><th>操作</th>
+              <th>業務</th><th>駐廠地點</th><th>返台日期</th><th>述職日</th><th>返回產區日</th><th>休假天數</th><th>備註</th><th>操作</th>
             </tr>
           </thead>
           <tbody id="rows"></tbody>
         </table>
         <div class="empty" id="emptyState" style="display:none;">目前還沒有紀錄，從左側表單新增第一筆吧。</div>
       </div>
-      <footer class="note">「天數」= 已回報者為返台到回公司的間隔天數；尚未回報者為返台至今的天數。超過 1 天未回報會標示為「逾期未回報」。</footer>
+      <footer class="note">述職日 = 業務返台後回公司報到、可安排面談的日子。休假天數已自動扣除週日與述職日當天。述職日超過返台後 1 天仍未填寫,會標示為「逾期未述職」。</footer>
     </div>
   </div>
 </div>
@@ -266,18 +271,35 @@
   const todayISO = () => new Date().toISOString().slice(0,10);
   $('#f-return').value = todayISO();
 
+  function toDate(iso){ return new Date(iso+'T00:00:00Z'); }
   function daysBetween(a, b){
-    const d1 = new Date(a+'T00:00:00Z');
-    const d2 = new Date(b+'T00:00:00Z');
-    return Math.round((d2 - d1) / 86400000);
+    return Math.round((toDate(b) - toDate(a)) / 86400000);
   }
   function fmtDate(iso){
     if(!iso) return '—';
-    const d = new Date(iso+'T00:00:00Z');
-    return new Intl.DateTimeFormat('zh-TW', {month:'numeric', day:'numeric', weekday:'short', timeZone:'UTC'}).format(d);
+    return new Intl.DateTimeFormat('zh-TW', {month:'numeric', day:'numeric', weekday:'short', timeZone:'UTC'}).format(toDate(iso));
   }
   function escapeHtml(s){
     return String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  // Vacation days = every day from returnDate to leaveEndDate (inclusive),
+  // minus Sundays (already a day off) and minus the debrief day itself
+  // (a work day, not vacation) when it falls inside that range.
+  function leaveDays(r){
+    if(!r.returnDate || !r.leaveEndDate) return null;
+    const start = toDate(r.returnDate);
+    const end = toDate(r.leaveEndDate);
+    if(end < start) return null;
+    let count = 0;
+    for(let d = new Date(start); d <= end; d.setUTCDate(d.getUTCDate()+1)){
+      if(d.getUTCDay() !== 0) count++;
+    }
+    if(r.debriefDate){
+      const db_ = toDate(r.debriefDate);
+      if(db_ >= start && db_ <= end && db_.getUTCDay() !== 0) count--;
+    }
+    return Math.max(count, 0);
   }
 
   let records = [];
@@ -291,22 +313,20 @@
 
   function computeStats(list){
     const real = list.filter(r => !r.isSample);
-    const pending = real.filter(r => !r.companyDate);
+    const pending = real.filter(r => !r.debriefDate);
     const overdue = pending.filter(r => daysBetween(r.returnDate, todayISO()) > 1);
-    const completed = real.filter(r => r.companyDate);
-    const avg = completed.length
-      ? (completed.reduce((s,r)=> s + daysBetween(r.returnDate, r.companyDate), 0) / completed.length)
-      : null;
-    return { total: real.length, pending: pending.length, overdue: overdue.length, avg };
+    const withLeave = real.map(leaveDays).filter(n => n !== null);
+    const avgLeave = withLeave.length ? (withLeave.reduce((a,b)=>a+b,0) / withLeave.length) : null;
+    return { total: real.length, pending: pending.length, overdue: overdue.length, avgLeave };
   }
 
   function renderStats(){
     const s = computeStats(records);
     statsEl.innerHTML = `
       <div class="stat"><div class="n">${s.total}</div><div class="l">總紀錄數</div></div>
-      <div class="stat"><div class="n ${s.pending? 'warn':''}">${s.pending}</div><div class="l">尚未回報人次</div></div>
-      <div class="stat"><div class="n ${s.overdue? 'warn':''}">${s.overdue}</div><div class="l">逾期未回報（＞1天）</div></div>
-      <div class="stat"><div class="n good">${s.avg===null ? '—' : s.avg.toFixed(1)+' 天'}</div><div class="l">平均回報天數</div></div>
+      <div class="stat"><div class="n ${s.pending? 'warn':''}">${s.pending}</div><div class="l">尚未述職人次</div></div>
+      <div class="stat"><div class="n ${s.overdue? 'warn':''}">${s.overdue}</div><div class="l">逾期未述職（＞1天）</div></div>
+      <div class="stat"><div class="n good">${s.avgLeave===null ? '—' : s.avgLeave.toFixed(1)+' 天'}</div><div class="l">平均休假天數</div></div>
     `;
   }
 
@@ -316,17 +336,12 @@
   }
 
   function statusBadge(r){
-    if(!r.companyDate){
+    if(!r.debriefDate){
       const d = daysBetween(r.returnDate, todayISO());
-      if(d > 1) return `<span class="badge warn">逾期未回報 · ${d}天</span>`;
-      return `<span class="badge neutral">待回報</span>`;
+      if(d > 1) return `<span class="badge warn">逾期未述職 · ${d}天</span>`;
+      return `<span class="badge neutral">待述職</span>`;
     }
-    return `<span class="badge good">已回報</span>`;
-  }
-
-  function daysCell(r){
-    if(r.companyDate) return daysBetween(r.returnDate, r.companyDate) + ' 天';
-    return daysBetween(r.returnDate, todayISO()) + ' 天（累計）';
+    return `<span class="badge good">已述職</span>`;
   }
 
   async function setField(id, patch){
@@ -347,7 +362,7 @@
     const onlyPending = $('#onlyPending').checked;
     let list = records.slice().sort((a,b) => (b.returnDate||'').localeCompare(a.returnDate||''));
     if(q) list = list.filter(r => (r.staffName||'').toLowerCase().includes(q) || (r.site||'').toLowerCase().includes(q));
-    if(onlyPending) list = list.filter(r => !r.companyDate);
+    if(onlyPending) list = list.filter(r => !r.debriefDate);
 
     clearSampleBtn.style.display = records.some(r=>r.isSample) ? '' : 'none';
 
@@ -364,7 +379,8 @@
           <td><input class="edit-input" data-k="staffName" value="${escapeHtml(r.staffName)}"></td>
           <td><input class="edit-input" data-k="site" value="${escapeHtml(r.site||'')}"></td>
           <td><input class="edit-input" type="date" data-k="returnDate" value="${r.returnDate||''}"></td>
-          <td><input class="edit-input" type="date" data-k="companyDate" value="${r.companyDate||''}"></td>
+          <td><input class="edit-input" type="date" data-k="debriefDate" value="${r.debriefDate||''}"></td>
+          <td><input class="edit-input" type="date" data-k="leaveEndDate" value="${r.leaveEndDate||''}"></td>
           <td class="mono">—</td>
           <td><input class="edit-input" data-k="note" value="${escapeHtml(r.note||'')}"></td>
           <td class="actions">
@@ -373,15 +389,17 @@
           </td>
         </tr>`;
       }
+      const ld = leaveDays(r);
       return `<tr data-id="${r.id}">
         <td class="staff">${escapeHtml(r.staffName)} ${r.isSample?'<span class="badge sample">示範</span>':''}</td>
         <td class="site">${escapeHtml(r.site||'—')}</td>
         <td class="mono">${fmtDate(r.returnDate)}</td>
-        <td class="mono">${fmtDate(r.companyDate)}</td>
-        <td class="mono">${statusBadge(r)}<br><span style="color:var(--ink-soft);font-size:11.5px;">${daysCell(r)}</span></td>
+        <td class="mono">${fmtDate(r.debriefDate)}<br>${statusBadge(r)}</td>
+        <td class="mono">${fmtDate(r.leaveEndDate)}</td>
+        <td class="mono">${ld===null ? '—' : ld+' 天'}</td>
         <td class="note" title="${escapeHtml(r.note||'')}">${escapeHtml(r.note||'—')}</td>
         <td class="actions">
-          ${!r.companyDate ? `<button class="btn btn-sm btn-primary" data-act="today" data-id="${r.id}">設為今天</button>` : ''}
+          ${!r.debriefDate ? `<button class="btn btn-sm btn-primary" data-act="today" data-id="${r.id}">述職設今天</button>` : ''}
           <button class="btn btn-sm btn-ghost" data-act="edit" data-id="${r.id}">編輯</button>
           <button class="btn btn-sm btn-ghost" data-act="del" data-id="${r.id}">刪除</button>
         </td>
@@ -396,7 +414,7 @@
     if(!btn) return;
     const act = btn.dataset.act;
     const id = btn.dataset.id;
-    if(act === 'today'){ await setField(id, { companyDate: todayISO() }); }
+    if(act === 'today'){ await setField(id, { debriefDate: todayISO() }); }
     else if(act === 'del'){ await removeRecord(id); }
     else if(act === 'edit'){ editingId = id; renderRows(); }
     else if(act === 'cancel'){ editingId = null; renderRows(); }
@@ -405,7 +423,8 @@
       const patch = {};
       tr.querySelectorAll('.edit-input').forEach(inp => { patch[inp.dataset.k] = inp.value; });
       if(!patch.staffName || !patch.returnDate){ showBanner('業務姓名與返台日期為必填。'); return; }
-      if(!patch.companyDate) patch.companyDate = null;
+      if(!patch.debriefDate) patch.debriefDate = null;
+      if(!patch.leaveEndDate) patch.leaveEndDate = null;
       editingId = null;
       await setField(id, patch);
     }
@@ -429,7 +448,8 @@
     const staffName = $('#f-staff').value.trim();
     const site = $('#f-site').value.trim();
     const returnDate = $('#f-return').value;
-    const companyDate = $('#f-company').value || null;
+    const debriefDate = $('#f-debrief').value || null;
+    const leaveEndDate = $('#f-leaveend').value || null;
     const note = $('#f-note').value.trim();
     if(!staffName || !returnDate) return;
 
@@ -437,7 +457,7 @@
     submitBtn.disabled = true;
     try{
       await db.collection('records').add({
-        staffName, site, returnDate, companyDate, note,
+        staffName, site, returnDate, debriefDate, leaveEndDate, note,
         createdAt: new Date().toISOString()
       });
       e.target.reset();
