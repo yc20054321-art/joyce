@@ -44,7 +44,13 @@ Map fields as follows:
 
 - 姓名 → `staffName` (keep Chinese + English exactly as shown)
 - 廠區 → `site`
-- 部門, 職稱, 返台手機, 返台市內電話 → fold into `note`, semicolon-separated
+- 職稱 (only when it's NOT the default "業務" — e.g. 副理/資深經理), 返台手機,
+  返台市內電話 → fold into `note`, semicolon-separated. **Skip 部門 entirely**: every
+  record so far is "台北業務六處C部", so writing it into every note just repeats the
+  same boilerplate string down the whole column and pushes out the details that
+  actually differ row to row (the table's 備註 column truncates, so the first thing in
+  the string is what the user actually sees at a glance). If a department ever shows up
+  that ISN'T 台北業務六處C部, that's worth a note since it'd be the exception.
 - 起訖日期「離開產區&返回產區日」 → start is `returnDate`, end is `leaveEndDate`
 - 述職日 → `debriefDate`. **If the screenshot doesn't show this field (cropped, or
   the form section just isn't filled in), leave it `null` and say so plainly** — do not
