@@ -242,6 +242,7 @@
       <div class="toolbar">
         <input type="search" id="search" placeholder="搜尋業務姓名或駐廠地點…">
         <label class="chk"><input type="checkbox" id="onlyPending"> 只看未進公司述職</label>
+        <label class="chk"><input type="checkbox" id="showPast"> 顯示已結束行程<span id="pastCount"></span></label>
         <button type="button" class="btn-link" id="clearSampleBtn" style="display:none;">清除示範資料</button>
       </div>
       <div class="table-wrap">
@@ -374,12 +375,23 @@
     catch(e){ showBanner('刪除失敗：'+ (e && e.message ? e.message : '請重試')); }
   }
 
+  function isPastTrip(r){
+    const lastDate = r.leaveEndDate || r.debriefDate || r.returnDate;
+    if(!lastDate) return false;
+    return toDate(lastDate) < toDate(todayISO());
+  }
+
   function renderRows(){
     const q = $('#search').value.trim().toLowerCase();
     const onlyPending = $('#onlyPending').checked;
+    const showPast = $('#showPast').checked;
     let list = records.slice().sort((a,b) => (a.returnDate||'').localeCompare(b.returnDate||''));
     if(q) list = list.filter(r => (r.staffName||'').toLowerCase().includes(q) || (r.site||'').toLowerCase().includes(q));
     if(onlyPending) list = list.filter(r => !r.debriefDate);
+
+    const pastHiddenCount = list.filter(r => isPastTrip(r)).length;
+    if(!showPast) list = list.filter(r => !isPastTrip(r));
+    $('#pastCount').textContent = (!showPast && pastHiddenCount) ? `（已收起 ${pastHiddenCount} 筆）` : '';
 
     clearSampleBtn.style.display = records.some(r=>r.isSample) ? '' : 'none';
 
@@ -449,6 +461,7 @@
 
   $('#search').addEventListener('input', renderRows);
   $('#onlyPending').addEventListener('change', renderRows);
+  $('#showPast').addEventListener('change', renderRows);
 
   clearSampleBtn.addEventListener('click', async () => {
     if(!db) return;
