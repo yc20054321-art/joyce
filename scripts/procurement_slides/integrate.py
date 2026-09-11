@@ -149,32 +149,33 @@ def reasons():
 # ============================================================== 4. AI 接手到哪裡
 def coverage():
     _id[0] = 1
-    s = header("三、AI 導入現況", "AI 已經接手到哪裡 — 全部落在輸入端，沒有一項跨進判斷端")
+    s = header("三、AI 導入現況", "AI 已經接手到哪裡 — 全部落在輸入端，沒有一項能跨進判斷端")
 
     lx, lw = MARGIN_X, 5.85
     rx, rw = MARGIN_X + 6.24, 5.85
 
-    s += tb(lx, 1.70, lw, 0.28, [[run("主採｜已導入 4 支 skill", 1250, 1, NAVY)]])
-    s += shape(lx, 2.04, lw, 2.72, TINT, "roundRect")
-    s += shape(lx, 2.04, 0.06, 2.72, NAVY)
+    s += tb(lx, 1.70, lw, 0.28, [[run("主採｜已導入 5 支 skill", 1250, 1, NAVY)]])
+    s += shape(lx, 2.04, lw, 2.92, TINT, "roundRect")
+    s += shape(lx, 2.04, 0.06, 2.92, NAVY)
     tools = [
         ("GU TA 用量自動核對填入", "填入 TA 的 Order Qty 欄"),
         ("Invoice 核對填 TA", "產出可填／衝突／模糊清單"),
         ("B/L 缸差比對", "產出核可狀態報告"),
         ("CBD → TA 產出工具", "轉換為 TA 格式"),
+        ("海空運費比較 產出工具", "查詢海／空運報價，產出比較 Excel"),
     ]
     y = 2.20
     for a, b in tools:
         s += tb(lx + 0.26, y, 2.70, 0.30, [[run("· " + a, 1000, 1, NAVY)]], anchor="ctr")
         s += tb(lx + 3.04, y, lw - 3.30, 0.30, [[run(b, 950, 0, BODY)]], anchor="ctr")
         y += 0.36
-    s += tb(lx + 0.26, y + 0.10, lw - 0.52, 0.76,
-            [[run("對應的三類合計約占 25% 的信件量；十四類加權後的 AI 可協助比例為 12.6%"
+    s += tb(lx + 0.26, 4.04, lw - 0.52, 0.76,
+            [[run("對應的類別合計約占 25% 的信件量；十四類加權後的 AI 可協助比例為 12.6%"
                   "（該簡報自述約 10–15%）。", 950, 0, BODY)]], lnspc=128)
 
     s += tb(rx, 1.70, rw, 0.28, [[run("副採｜4 個潛在可介入點", 1250, 1, BLUE)]])
-    s += shape(rx, 2.04, rw, 2.72, PANEL, "roundRect")
-    s += shape(rx, 2.04, 0.06, 2.72, BLUE)
+    s += shape(rx, 2.04, rw, 2.92, PANEL, "roundRect")
+    s += shape(rx, 2.04, 0.06, 2.92, BLUE)
     pts = [
         ("PO／BOM 系統性資料 key-in", "by 款採購作業　20%"),
         ("空運費計算（by flow）", "空運費計算　5%"),
@@ -186,26 +187,26 @@ def coverage():
         s += tb(rx + 0.26, y, 3.10, 0.30, [[run("· " + a, 1000, 1, BLUE)]], anchor="ctr")
         s += tb(rx + 3.44, y, rw - 3.70, 0.30, [[run(b, 950, 0, BODY)]], algn="r", anchor="ctr")
         y += 0.36
-    s += tb(rx + 0.26, y + 0.10, rw - 0.52, 0.76,
+    s += tb(rx + 0.26, 4.04, rw - 0.52, 0.76,
             [[run("這四個介入點分布在合計約 40% 的類別中（20＋5＋10＋5）——"
                   "但可自動化的只是這些類別裡的登錄與計算步驟。", 950, 0, BODY)]], lnspc=128)
 
-    s += shape(MARGIN_X, 4.94, CONTENT_W, 0.76, REDBG, "roundRect")
-    s += shape(MARGIN_X, 4.94, 0.06, 0.76, RED)
-    s += tb(MARGIN_X + 0.24, 5.02, 2.05, 0.24, [[run("⚠ 別讀錯這兩個數字", 1050, 1, RED)]])
-    s += tb(MARGIN_X + 2.40, 5.02, CONTENT_W - 2.64, 0.62,
+    s += shape(MARGIN_X, 5.08, CONTENT_W, 0.76, REDBG, "roundRect")
+    s += shape(MARGIN_X, 5.08, 0.06, 0.76, RED)
+    s += tb(MARGIN_X + 0.24, 5.16, 2.05, 0.24, [[run("⚠ 別讀錯這兩個數字", 1050, 1, RED)]])
+    s += tb(MARGIN_X + 2.40, 5.16, CONTENT_W - 2.64, 0.62,
             [[run("「25%」與「40%」講的是這些工具「碰得到的類別」占多少，不是「可以被取代的工時」。"
                   "工具接手的是類別裡的登錄與比對步驟；同一類別裡的議定、催辦、判讀、拍板，仍然逐件由人處理。",
                   950, 0, BODY)]], lnspc=125)
 
-    s += takeaway(5.90, [
+    s += takeaway(6.24, [
         run("→ ", 1300, 1, NAVY),
-        run("八個項目全部落在「比對與填入」；要不要覆蓋、算不算核可、報告能不能寄出，", 1300, 1, INK),
+        run("九個項目全部落在「比對與填入」；要不要覆蓋、算不算核可、報告能不能寄出，", 1300, 1, INK),
         run("仍然是人按下確認鍵", 1300, 1, RED),
         run("。", 1300, 1, INK),
     ], h=0.58)
     s += source("資料來源：主採團隊現行 Claude Code skill 清單（bl-dyelot-check／ta-invoice-fill／"
-                "gu-ta-orderqty-fill／gu-cbd-to-ta-tool）；V6副採工作範疇簡略說明（2026-09-07）工時特性頁。"
+                "gu-ta-orderqty-fill／gu-cbd-to-ta-tool，另含海空運費比較產出工具）；V6副採工作範疇簡略說明（2026-09-07）工時特性頁。"
                 "25%、40%、12.6% 均為依表列占比推算之估算值。")
     return wrap(s)
 

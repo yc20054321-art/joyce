@@ -167,6 +167,47 @@ def sub(xml, pairs, where=''):
     return xml
 
 
+# ------------------------------------------------- new skill on the tools table
+NEW_TOOL = (
+    '海空運費比較 產出工具',
+    '查詢海／空運報價，選定報價後產出符合原始格式的「海空運費比較」Excel',
+    '選哪一家、走海運或空運，仍須依當下產能、船期與交期風險判斷',
+)
+
+
+def add_tool_row(xml):
+    """Clone the last table row for the 5th skill, and tighten row heights so the
+    six-row table still clears the closing band at 6.36"."""
+    rows = [m for m in re.finditer(r'<a:tr\b.*?</a:tr>', xml, re.S)]
+    assert rows, 'tools table not found'
+    last = rows[-1]
+    row = last.group(0)
+
+    # one run per cell, carrying that cell's existing formatting
+    cells = list(re.finditer(r'<a:tc>.*?</a:tc>', row, re.S))
+    assert len(cells) == len(NEW_TOOL), 'expected %d cells, got %d' % (len(NEW_TOOL), len(cells))
+    out, cursor = [], 0
+    for cell, text in zip(cells, NEW_TOOL):
+        seg = cell.group(0)
+        runs = re.findall(r'<a:r>.*?</a:r>', seg, re.S)
+        if runs:
+            first = re.sub(r'<a:t>.*?</a:t>', '<a:t>%s</a:t>' % text, runs[0], count=1, flags=re.S)
+            seg = seg.replace(''.join(runs), first)
+        out.append(row[cursor:cell.start()] + seg)
+        cursor = cell.end()
+    new_row = ''.join(out) + row[cursor:]
+
+    xml = xml[:last.end()] + new_row + xml[last.end():]
+
+    # 6 rows now: header 0.50 + 5 x 0.80 = 4.50, so the table ends at 6.18
+    heights = [0.50] + [0.80] * 5
+    it = iter(heights)
+    xml = re.sub(r'<a:tr h="\d+"', lambda m: '<a:tr h="%s"' % emu(next(it)), xml)
+    xml = re.sub(r'(<p:graphicFrame>.*?<a:ext cx="\d+") cy="\d+"',
+                 lambda m: m.group(1) + ' cy="%s"' % emu(4.50), xml, count=1, flags=re.S)
+    print('  slide9  5th skill added; table re-fitted to 6 rows')
+    return xml
+
 # ------------------------------------------------------------------- messaging
 SEC1, SEC2, SEC3, SEC4 = '一、主採範疇', '二、AI 能協助到哪裡', '三、已導入的 AI 工具', '四、結論與建議'
 
@@ -211,6 +252,10 @@ EDITS = {
          '這三件事 AI 幫得上忙，卻沒有一件能代替人完成。')],
 
     # ---- mine: the tools page
+    9: [('（bl-dyelot-check／ta-invoice-fill／gu-ta-orderqty-fill／gu-cbd-to-ta-tool）',
+         '（bl-dyelot-check／ta-invoice-fill／gu-ta-orderqty-fill／gu-cbd-to-ta-tool，'
+         '另含海空運費比較產出工具）')],
+
     6: [('AI 已接手的與接不了的 — 以及這份數字的口徑',
          'AI 接手的是「填表與核對」— 判斷與承諾仍留在人身上')],
 
@@ -230,7 +275,7 @@ TAKEAWAYS = {
           run('AI 可以整理與提示，但「答案合不合理」與「誰來扛」這兩件事，', 1300, 1, INK),
           run('沒有任何一項能交出去', 1300, 1, RED), run('。', 1300, 1, INK)], 6.60),
     9:  ([run('→ ', 1300, 1, NAVY),
-          run('四支工具接手的都是「比對與填入」；要不要覆蓋、算不算核可、報告能不能寄出，', 1300, 1, INK),
+          run('五支工具接手的都是「比對與填入」；要不要覆蓋、算不算核可、報告能不能寄出，', 1300, 1, INK),
           run('仍然是人按下確認鍵', 1300, 1, RED), run('。', 1300, 1, INK)], 6.36),
 }
 
@@ -247,6 +292,8 @@ def main():
         if n in THEIRS:
             x = normalise(x, TAKEAWAY_BOT if n in TAKEAWAYS else BODY_BOT)
             print('  slide%-2d normalised onto the family grid/palette/font' % n)
+        if n == 9:
+            x = add_tool_row(x)
         if n in EDITS:
             x = sub(x, EDITS[n], 'slide%d' % n)
         if eyebrow:
