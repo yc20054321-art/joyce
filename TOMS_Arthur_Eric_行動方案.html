@@ -77,6 +77,20 @@ td.due{white-space:nowrap;font-variant-numeric:tabular-nums;width:90px}
 .step .d{font-family:var(--mono);font-weight:700;color:var(--accent);font-size:15px}
 .step ul{margin:6px 0 0;padding-left:18px;font-size:14px}
 
+.role{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.role > div{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:14px 16px;min-width:0}
+.role ul{margin:6px 0 0;padding-left:18px;font-size:14px;display:flex;flex-direction:column;gap:4px}
+.org{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-weight:700}
+.org .box{border:1.5px solid var(--accent);color:var(--accent);border-radius:6px;padding:4px 12px;background:var(--accent-soft)}
+.org .arrow{color:var(--muted)}
+.trend td.n,.trend th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.trend tr.total td{font-weight:700;background:var(--bg)}
+.up{color:var(--mk);font-weight:700}
+.down{color:var(--lost);font-weight:700}
+.reasons{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin-top:14px}
+.reasons div{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px 14px;font-size:14px;min-width:0}
+.reasons b{display:block;margin-bottom:4px}
+.done{font-size:11px;font-weight:700;color:var(--mk);border:1px solid var(--mk);border-radius:3px;padding:0 4px;margin-left:4px;white-space:nowrap}
 .caveat{background:var(--accent-soft);border-radius:8px;padding:14px 16px;font-size:14px}
 .caveat ul{margin:6px 0 0;padding-left:18px}
 
@@ -95,13 +109,36 @@ dialog img{max-width:96vw;max-height:94vh;display:block;background:#fff;cursor:z
 <header>
   <div class="eyebrow">TOMS 轉入 V6 · 內部討論用</div>
   <h1>TOMS 行動方案：Arthur × Eric</h1>
-  <p class="meta">整理：Joyce　·　2026/10/7　·　依據以下三封信及附圖</p>
+  <p class="meta">整理：Joyce　·　2026/10/7　·　依據以下信件及附件</p>
   <div class="src">
     <span>Eric〈TOMS 訂單款式 總覽〉10/7 15:28</span>
     <span>Arthur〈RE: TOMS 訂單款式 總覽〉10/7 15:57</span>
     <span>Eric〈RE: TOMS在V3的報告 呈現〉10/7 15:55</span>
+    <span>Eric〈RE: TOMS 訂單款式 總覽〉10/7 補充 2023–2027 數字</span>
   </div>
 </header>
+
+<section>
+  <h2>角色：Arthur 將是 Eric 的直屬主管</h2>
+  <div class="role">
+    <div>
+      <div class="org"><span class="box">Arthur（V6 主管）</span><span class="arrow">→ 直屬 →</span><span class="box">Eric（TOMS）</span><span class="arrow">→</span><span class="box">Carrie</span></div>
+      <p class="meta" style="margin-top:8px">TOMS 轉入 V6 後，Eric 直接向 Arthur 回報。本頁的行動項目都以這個關係安排。</p>
+    </div>
+    <div>
+      <h3>Arthur 決定</h3>
+      <ul><li>接單與報價方向（B 項：爭取哪些款式、放棄哪些）</li><li>TOMS 的 PJT 檢視頻率和報表格式</li><li>人力與系統分工</li></ul>
+    </div>
+    <div>
+      <h3>Eric 回報</h3>
+      <ul><li>每週 1:1（建議 30 分鐘）：訂單、品質、客戶動態</li><li>每月 Order Review 前先給 Arthur 預審</li><li>重要客戶聯繫（Tsuda san、南方）事先同步</li></ul>
+    </div>
+    <div>
+      <h3>Joyce 協助</h3>
+      <ul><li>PJT 與週報整合（GU、TOMS、YAMATO）</li><li>追蹤本頁行動項目進度</li></ul>
+    </div>
+  </div>
+</section>
 
 <section>
   <h2>關鍵發現</h2>
@@ -111,8 +148,8 @@ dialog img{max-width:96vw;max-height:94vh;display:block;background:#fff;cursor:z
       <p>非棉 TEE、非配件的款式中，MK 只接 17 款（35%）。</p>
     </div>
     <div class="find alert">
-      <div class="big">2.4 <small>萬標打</small></div>
-      <p>Arthur 說的流失量，剛好等於 3 款轉到他廠的量：337-AVT 約 0.4 萬，加上 338-AMZ、358-AMJ 約 2 萬（2024 年量）。<b>這是推測，請 Eric 確認。</b></p>
+      <div class="big">−31% <small>FOB</small></div>
+      <p>全客戶接單金額從 2023 年 5,989 萬美元，預估降到 2027 年 4,103 萬美元。最大來源是 Sweater，減少約 1,621 萬美元。</p>
     </div>
     <div class="find">
       <div class="big">50 萬 <small>件／月</small></div>
@@ -122,6 +159,30 @@ dialog img{max-width:96vw;max-height:94vh;display:block;background:#fff;cursor:z
       <div class="big">品質 <small>第一瓶頸</small></div>
       <p>其次是能接的品項已到頂。CEO 關心三件事：客戶銷售、大貨品質、成本改善。</p>
     </div>
+  </div>
+</section>
+
+<section>
+  <h2>營運趨勢 2023–2027（Eric 10/7 補充）</h2>
+  <p class="meta" style="margin-bottom:10px">接單金額 FOB，單位：萬美元。2026、2027 為預估。來源：Eric 附件〈TOMS 23~27.xlsx〉。</p>
+  <div class="tbl"><table class="trend">
+    <thead><tr><th>Program</th><th class="n">2023</th><th class="n">2024</th><th class="n">2025</th><th class="n">2026</th><th class="n">2027</th><th class="n">23→27</th><th>Eric 說明</th></tr></thead>
+    <tbody>
+<tr class="total"><td>All Program</td><td class="n">5,989</td><td class="n">5,139</td><td class="n">4,836</td><td class="n">4,736</td><td class="n">4,103</td><td class="n down">-1,886</td><td>23–24 年仍有印尼產區</td></tr>
+<tr><td>SEASONAL-SWEATER</td><td class="n">2,144</td><td class="n">1,388</td><td class="n">869</td><td class="n">632</td><td class="n">523</td><td class="n down">-1,621</td><td>2023 年高峰（French Terry 約 250 萬件），之後銷售不佳只採購 185g/m²；2026 年起 330g/m² 停止販售</td></tr>
+<tr><td>YEARLY RUN-ACT300</td><td class="n">2,291</td><td class="n">2,518</td><td class="n">2,884</td><td class="n">2,852</td><td class="n">2,324</td><td class="n up">+34</td><td>2026 Q4 起因銷售不佳、爆倉減量（165 萬件／月 → 120 萬件／月）。MK 為唯一供應商</td></tr>
+<tr><td>SEASONAL</td><td class="n">757</td><td class="n">368</td><td class="n">265</td><td class="n">255</td><td class="n">260</td><td class="n down">-497</td><td>印尼平織 2024 停；2025 起印尼針織單轉越南 Tsuda san 韓國友人</td></tr>
+<tr><td>YEARLY RUN-POLO</td><td class="n">300</td><td class="n">331</td><td class="n">293</td><td class="n">512</td><td class="n">659</td><td class="n up">+359</td><td>2026 年從越南 MTV 搶到一款 POLO</td></tr>
+<tr><td>YEARLY RUN-304ALT</td><td class="n">242</td><td class="n">246</td><td class="n">381</td><td class="n">386</td><td class="n">268</td><td class="n up">+26</td><td>依銷售下單，MK 為唯一供應商</td></tr>
+<tr><td>YEARLY RUN-BTM</td><td class="n">181</td><td class="n">153</td><td class="n">15</td><td class="n">—</td><td class="n">—</td><td class="n down">-181</td><td>印尼轉越南，下給 Tsuda san 韓國友人</td></tr>
+<tr><td>YEARLY RUN-AIT350</td><td class="n">74</td><td class="n">135</td><td class="n">129</td><td class="n">99</td><td class="n">68</td><td class="n down">-6</td><td>依銷售下單，MK 為唯一供應商</td></tr>
+    </tbody>
+  </table></div>
+  <div class="reasons">
+    <div><b>① Sweater：最主要的衰退</b>從 2,144 萬降到 523 萬。終端銷售不佳，客戶只保留 185g/m²，並停止採購 330g/m² French Terry。</div>
+    <div><b>② 平織停產、印尼訂單移轉</b>2024 年起平織停止採購；印尼針織單（Seasonal、BTM）轉到越南他廠，Eric 估計合計少約 500 萬。</div>
+    <div><b>③ ACT300 庫存調整</b>2026 Q4 起減量，2027 回到與 2023 相近的水準（約 2,324 萬）。</div>
+    <div><b>④ POLO 成長</b>2026 年從 MTV 搶到一款，成為 2027 主要成長來源。6 月曾請 Tsuda san 再給 MTV 款式報價，被拒絕。</div>
   </div>
 </section>
 
@@ -212,10 +273,12 @@ dialog img{max-width:96vw;max-height:94vh;display:block;background:#fff;cursor:z
     <div class="tbl"><table>
       <thead><tr><th>#</th><th>行動</th><th>負責</th><th>期限</th></tr></thead>
       <tbody>
-        <tr><td class="id">A1</td><td>確認 Arthur 說的「2.4 萬打流失」是否就是紅框 3 款（337-AVT、338-AMZ、358-AMJ）轉他廠的量。說明轉廠原因：價格、品質，還是產能？<span class="new">附圖新發現</span></td><td class="who">Eric → Arthur</td><td class="due">10/12</td></tr>
-        <tr><td class="id">A2</td><td>回答 Arthur 第二個疑問：seasonal 訂單是否被轉走？轉到哪裡、量多少。</td><td class="who">Eric → Arthur</td><td class="due">10/12</td></tr>
-        <tr><td class="id">A3</td><td>紫框 5 款 SWEAT 停產，是客戶整款停賣，還是改給別家做？</td><td class="who">Eric → Arthur</td><td class="due">10/12</td></tr>
-        <tr><td class="id">A4</td><td>近 3 年訂單趨勢，按品類拆開（ACT300、304ALT、POLO、AIT350、SEASONAL、SWEATER），讓下滑原因有數字佐證。</td><td class="who">Carrie 拉數據，Eric 確認</td><td class="due">10/12</td></tr>
+        <tr><td class="id">A1</td><td>Arthur 問「非棉 TEE 產品賣不好、流失 2.4 萬打」。Eric 的數字顯示主因是 Sweater（−1,621 萬美元）。請 Eric 說明 2.4 萬打的出處，以及紅框 3 款（337-AVT、338-AMZ、358-AMJ）轉他廠的原因。<span class="done">部分已回覆</span></td><td class="who">Eric → Arthur</td><td class="due">10/12</td></tr>
+        <tr><td class="id">A2</td><td>Seasonal 是否轉走：是。印尼平織 2024 年停，印尼針織單 2025 年起轉給越南 Tsuda san 的韓國友人。<span class="done">已回覆</span></td><td class="who">Eric → Arthur</td><td class="due">完成</td></tr>
+        <tr><td class="id">A3</td><td>Sweater 停產：客戶 2026 年起停止販售 330g/m² French Terry，只保留 185g/m²。<span class="done">已回覆</span></td><td class="who">Eric → Arthur</td><td class="due">完成</td></tr>
+        <tr><td class="id">A4</td><td>2023–2027 各 Program 趨勢數字。<span class="done">已回覆</span></td><td class="who">Eric → Arthur</td><td class="due">完成</td></tr>
+        <tr><td class="id">A5</td><td><b>ACT300 風險：</b>MK 是唯一供應商，也是最大的 Program。2026 Q4 起從每月 165 萬件減到 120 萬件。每月跟 Tsuda san 確認銷售與庫存，提早掌握 2027 下單量。<span class="new">新增</span></td><td class="who">Eric → Arthur</td><td class="due">每月</td></tr>
+        <tr><td class="id">A6</td><td><b>Sweater 185g/m²：</b>2027 仍有約 523 萬美元。確認客戶對這個布種的銷售趨勢，避免再一次大幅下滑。<span class="new">新增</span></td><td class="who">Eric → Arthur</td><td class="due">10 月內</td></tr>
       </tbody>
     </table></div>
   </div>
@@ -225,7 +288,7 @@ dialog img{max-width:96vw;max-height:94vh;display:block;background:#fff;cursor:z
     <div class="tbl"><table>
       <thead><tr><th>#</th><th>行動</th><th>負責</th><th>期限</th></tr></thead>
       <tbody>
-        <tr><td class="id">B1</td><td><b>POLO：</b>MK 做 302-ADP 每月約 10 萬件，越南 MTV 做 8 款每月約 50 萬件。比較 NCMT $16.9 和 MTV 的價差，評估先擴大 302-ADP，再爭取其他 7 款。</td><td class="who">Eric 提價差，Arthur 決定</td><td class="due">10/8 面談</td></tr>
+        <tr><td class="id">B1</td><td><b>POLO：</b>MK 做 302-ADP 每月約 10 萬件，越南 MTV 做 8 款每月約 50 萬件。比較 NCMT $16.9 和 MTV 的價差，評估先擴大 302-ADP，再爭取其他 7 款。6 月曾請 Tsuda san 再給 MTV 款式報價被拒絕，下次要準備新的條件（價格或品質）再談。</td><td class="who">Eric 提價差，Arthur 決定</td><td class="due">10/8 面談</td></tr>
         <tr><td class="id">B2</td><td><b>拿回紅框 3 款：</b>MK 以前做過，有 NCMT 實績（20.83、18.81）。如果轉走的原因可以解決，這是最快補回 2.4 萬打的方法。<span class="new">附圖新發現</span></td><td class="who">Eric 評估，Arthur 決定</td><td class="due">10/8 面談</td></tr>
         <tr><td class="id">B3</td><td><b>平織外套 3 款：</b>原 IND-STL 生產，已轉 VIN 他廠。確認轉廠原因、有沒有機會拿回。<span class="new">附圖新發現</span></td><td class="who">Eric → Arthur</td><td class="due">10/12</td></tr>
         <tr><td class="id">B4</td><td><b>HV 的 24 款小量單：</b>評估併批生產或談最低訂量。不划算就明確放棄，不再花時間報價。</td><td class="who">Eric 評估，Arthur 決定</td><td class="due">10/12</td></tr>
@@ -284,7 +347,7 @@ dialog img{max-width:96vw;max-height:94vh;display:block;background:#fff;cursor:z
   <h2>建議時程</h2>
   <div class="timeline">
     <div class="step"><div class="d">10/8（四）</div><ul><li>Arthur × Eric 面談 30 分鐘</li><li>談 B1、B2 方向，以及 E1 檢視頻率</li><li>Joyce 回覆 Carrie 雙週差表格（E2）</li></ul></div>
-    <div class="step"><div class="d">10/12（一）</div><ul><li>Eric 交 A1–A4、B3、B4、C1、C2、D1 資料</li><li>Joyce 確認策管報表時程（E3）</li></ul></div>
+    <div class="step"><div class="d">10/12（一）</div><ul><li>Eric 交 A1、B3、B4、C1、C2、D1 資料</li><li>Joyce 確認策管報表時程（E3）</li></ul></div>
     <div class="step"><div class="d">10/13（二）</div><ul><li>Order Review 書面報告</li><li>依 CEO 關心的三點排序：銷售 → 品質 → 成本</li></ul></div>
     <div class="step"><div class="d">10 月下旬起</div><ul><li>拜訪客戶（F1）</li><li>10 月 QA 驗貨結果回報（C3）</li></ul></div>
   </div>
@@ -293,7 +356,7 @@ dialog img{max-width:96vw;max-height:94vh;display:block;background:#fff;cursor:z
 <section class="caveat">
   <b>請注意</b>
   <ul>
-    <li>「2.4 萬打 = 紅框 3 款」是我把附圖數字加總後的推測（0.4 萬 + 2 萬），需要 Eric 確認。</li>
+    <li>Eric 的補充數字裡沒有直接解釋「2.4 萬打」。紅框 3 款合計約 2.4 萬標打（0.4 萬 + 2 萬）只是吻合，仍需 Eric 確認。</li>
     <li>C2 的問題出自另一串信〈10/13 V2/V3/V6 Order review 調整為書面報告〉，只根據信件摘要整理。</li>
     <li>B 項（要爭取哪些款式）都需要 Arthur 決定，表中只列出討論事項。</li>
   </ul>
