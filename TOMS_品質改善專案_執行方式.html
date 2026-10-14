@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TOMS 品質改善專案</title>
+<style>
+/* Layout: single reading column — status strip, role cards, step table, checklists, priority styles, decisions */
+:root{
+  --bg:#f5f6f8; --surface:#ffffff; --fg:#1d2330; --muted:#5d6676; --line:#dce0e7;
+  --accent:#1f4f8f; --accent-soft:#e7eef8;
+  --tp:#1f4f8f; --tp-soft:#e7eef8;      /* 台北業務 */
+  --fac:#2e7d4f; --fac-soft:#e3f2e8;    /* 駐廠 */
+  --boss:#8a5a12; --boss-soft:#f8eedb;  /* Arthur */
+  --hot:#b8382c; --hot-soft:#fbe7e4;
+  --sans:"Microsoft JhengHei","PingFang TC","Noto Sans TC",system-ui,sans-serif;
+  --mono:ui-monospace,Consolas,Menlo,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#13161c; --surface:#1b1f27; --fg:#e6e9ef; --muted:#9aa3b2; --line:#2f3541;
+  --accent:#86aee8; --accent-soft:#1e2a3f;
+  --tp:#86aee8; --tp-soft:#1e2a3f; --fac:#6fd39a; --fac-soft:#18301f; --boss:#e7b862; --boss-soft:#33281a;
+  --hot:#f08878; --hot-soft:#3a1f1c; color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:15px;line-height:1.7}
+.wrap{max-width:980px;margin:0 auto;padding-inline:16px;padding-block:32px 64px;display:flex;flex-direction:column;gap:36px}
+.eyebrow{font-size:12px;letter-spacing:.12em;color:var(--muted);font-weight:700}
+h1{font-size:26px;line-height:1.35;margin:6px 0 8px;text-wrap:balance}
+h2{font-size:19px;margin:0 0 14px;padding-bottom:8px;border-bottom:2px solid var(--fg)}
+h3{font-size:15px;margin:0 0 6px}
+p{margin:0}
+.meta{color:var(--muted);font-size:13px}
+.status{background:var(--accent-soft);border-radius:8px;padding:12px 16px;font-size:14px;display:flex;flex-direction:column;gap:4px}
+
+.roles{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.role{background:var(--surface);border:1px solid var(--line);border-top:4px solid var(--c);border-radius:8px;padding:14px 16px;min-width:0}
+.role .tag{display:inline-block;font-size:12px;font-weight:700;color:var(--c);background:var(--cs);padding:1px 10px;border-radius:12px;margin-bottom:6px}
+.role ul{margin:6px 0 0;padding-left:18px;font-size:14px}
+.role .no{margin-top:8px;font-size:13px;color:var(--hot)}
+.tp{--c:var(--tp);--cs:var(--tp-soft)} .fac{--c:var(--fac);--cs:var(--fac-soft)} .boss{--c:var(--boss);--cs:var(--boss-soft)}
+
+.flow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:4px 0 14px;font-size:13px}
+.flow span{background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:2px 8px;white-space:nowrap}
+.flow i{color:var(--muted);font-style:normal}
+
+.tbl{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:8px}
+table{border-collapse:collapse;width:100%;min-width:720px;font-size:14px}
+th,td{text-align:left;vertical-align:top;padding:10px 12px;border-top:1px solid var(--line)}
+th{border-top:0;background:var(--bg);font-size:12px;letter-spacing:.06em;color:var(--muted);white-space:nowrap}
+td.step{font-weight:700;white-space:nowrap}
+td.step b{display:inline-block;font-family:var(--mono);color:var(--accent);margin-right:6px}
+.chip{display:inline-block;font-size:12px;font-weight:700;padding:0 8px;border-radius:10px;white-space:nowrap}
+.chip.tp{background:var(--tp-soft);color:var(--tp)} .chip.fac{background:var(--fac-soft);color:var(--fac)} .chip.boss{background:var(--boss-soft);color:var(--boss)}
+.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.top td{background:var(--hot-soft)}
+
+.lists{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
+.list{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:14px 16px;min-width:0}
+.list ul{margin:6px 0 0;padding-left:0;list-style:none;font-size:14px;display:flex;flex-direction:column;gap:4px}
+.list li::before{content:"☐ ";color:var(--muted)}
+
+.defects{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;font-size:13px}
+.defects span{background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:2px 10px}
+
+.decide{background:var(--boss-soft);border-radius:8px;padding:14px 18px}
+.decide ol{margin:6px 0 0;padding-left:20px}
+@media print{body{background:#fff}.role,.tbl,.list{break-inside:avoid}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="eyebrow">TOMS · 品質改善專案</div>
+  <h1>TOMS 品質改善專案：執行方式與分工</h1>
+  <p class="meta">提案：Joyce　·　給：Arthur　·　2026/10/14</p>
+</header>
+
+<section class="status">
+  <b>目前進度</b>
+  <span>・Robert 已回覆：MK3 另一客戶參訪結束後就進廠找 root cause。</span>
+  <span>・Eric 已提供 8 月瑕疵報表給 Robert，用來排定優先檢查的款式與工廠。</span>
+</section>
+
+<section>
+  <h2>一、分工原則：台北業務主導，駐廠團隊查核回饋</h2>
+  <div class="roles">
+    <div class="role tp">
+      <span class="tag">台北業務（Eric 團隊）· 主導</span>
+      <ul>
+        <li>提供款式資料與 TOMS 品質標準</li>
+        <li>整理巡廠發現的問題</li>
+        <li>對工廠下改善指示，CC Arthur</li>
+      </ul>
+    </div>
+    <div class="role fac">
+      <span class="tag">駐廠團隊（Robert / MDQC / Yuffie）</span>
+      <ul>
+        <li>依台北提供的標準巡廠、跟流程</li>
+        <li>把問題回饋給台北</li>
+        <li>依台北需求複查改善狀況</li>
+      </ul>
+      <p class="no">初期不直接要求工廠改善，避免指示來源不一</p>
+    </div>
+    <div class="role boss">
+      <span class="tag">Arthur</span>
+      <ul>
+        <li>決定 5S 採 GU 標準或歐美線一般做法的範圍</li>
+        <li>在改善指示中被 CC，增加對工廠的要求力道</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>二、執行步驟</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>步驟</th><th>內容</th><th>台北業務</th><th>駐廠團隊</th><th>產出</th></tr></thead>
+    <tbody>
+      <tr><td class="step"><b>0</b>進廠前準備</td><td>讓巡廠人員先了解 TOMS 的品質要求（MDQC、Yuffie 不熟 TOMS 客性）</td><td><span class="chip tp">主責</span> 提供款式資料包與品質標準（見第三點）</td><td>確認巡廠時程、人員</td><td>資料包、標準說明</td></tr>
+      <tr><td class="step"><b>1</b>5S 巡廠</td><td>先用 GU 的 5S 標準看工廠整體現況</td><td>—</td><td><span class="chip fac">主責</span> 依 GU 標準巡廠，列出差異</td><td>5S 差異清單 → <span class="chip boss">Arthur＋Eric</span> 決定採用範圍（考量成本）</td></tr>
+      <tr><td class="step"><b>2</b>單款全流程</td><td>每廠挑 1–2 款，從進布一路看到出貨（流程見下方）</td><td>指定款式與產線</td><td><span class="chip fac">主責</span> 逐站記錄問題與照片</td><td>各站問題清單</td></tr>
+      <tr><td class="step"><b>3</b>回饋與指示</td><td>問題集中回台北，由業務對工廠下指示</td><td><span class="chip tp">主責</span> 整理問題，發改善指示給工廠，CC Arthur</td><td>只回饋問題，不直接指示工廠</td><td>改善指示、工廠 CAP</td></tr>
+      <tr><td class="step"><b>4</b>改善追蹤</td><td>確認工廠確實改善</td><td><span class="chip tp">主責</span> 提出複查需求，追蹤客戶瑕疵率</td><td>依台北需求到現場複查</td><td>複查紀錄、每月瑕疵率</td></tr>
+    </tbody>
+  </table></div>
+  <p class="meta" style="margin-top:12px">步驟 2 的全流程：</p>
+  <div class="flow"><span>進布</span><i>→</i><span>驗布</span><i>→</i><span>鬆布</span><i>→</i><span>驗片</span><i>→</i><span>裁</span><i>→</i><span>車</span><i>→</i><span>燙</span><i>→</i><span>包</span><i>→</i><span>EQC / FQC 檢品</span></div>
+</section>
+
+<section>
+  <h2>三、台北業務在進廠前要提供的資料</h2>
+  <div class="lists">
+    <div class="list">
+      <h3>A. 款式資料包（每款一份）</h3>
+      <ul>
+        <li>款式、作工說明</li>
+        <li>布種</li>
+        <li>尺寸表</li>
+        <li>製作工廠，以及在該廠的哪幾條 LINE</li>
+        <li>過去客訴的前三大問題（附照片）</li>
+      </ul>
+    </div>
+    <div class="list">
+      <h3>B. TOMS 品質標準說明</h3>
+      <ul>
+        <li>尺寸允收公差</li>
+        <li>NG 與 OK 的作工對照（建議用照片）</li>
+        <li>客戶特別關注的重大瑕疵：側縫漏縫、破洞、髒污</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>四、建議優先追蹤的款式</h2>
+  <p class="meta" style="margin-bottom:10px">依 Eric 提供的 8 月瑕疵報表（Defect Contents report 2026 Aug）</p>
+  <div class="tbl"><table>
+    <thead><tr><th>工廠</th><th>款式</th><th class="num">8 月瑕疵件數</th><th class="num">8 月瑕疵率</th><th>理由</th></tr></thead>
+    <tbody>
+      <tr class="top"><td><b>MK2C</b></td><td><b>00300-ACT</b></td><td class="num">796</td><td class="num">0.06%</td><td>量最大，佔 MK 8 月瑕疵 1,081 件的 <b>74%</b>（佔 TOMS 全體 42%）；Q4 仍有大量訂單。改善這一款效果最大</td></tr>
+      <tr class="top"><td><b>MK1</b></td><td><b>00219-MLC</b></td><td class="num">74</td><td class="num">0.49%</td><td>瑕疵率最高（1–8 月累計 0.20%）</td></tr>
+      <tr><td>MK2B</td><td>00304-ALT</td><td class="num">46</td><td class="num">0.06%</td><td>MK2B 主要款，Q4 有訂單</td></tr>
+      <tr><td>MK2A</td><td>00331-ABP 或 00313-ABN</td><td class="num">27 / 15</td><td class="num">0.05% / 0.08%</td><td>POLO 線代表款</td></tr>
+    </tbody>
+  </table></div>
+  <div class="defects">
+    <b>MK 8 月瑕疵類別：</b>
+    <span>髒污 39%</span><span>破洞 34%</span><span>車縫瑕疵 16%</span><span>尺寸 8%</span>
+  </div>
+  <p class="meta" style="margin-top:6px">全流程追蹤時，請特別留意這幾項在哪一站發生。</p>
+</section>
+
+<section class="decide">
+  <h2 style="border-color:var(--boss)">五、需要 Arthur 決定</h2>
+  <ol>
+    <li>以上分工與步驟是否 OK，確認後再發給 Eric 和 Robert。</li>
+    <li>優先款式：是否先從 MK2C 00300-ACT 和 MK1 00219-MLC 開始。</li>
+    <li>5S 標準：先全面用 GU 標準巡一次，再由 Arthur 和 Eric 決定採用範圍。</li>
+  </ol>
+</section>
+
+</div>
+</body>
+</html>
