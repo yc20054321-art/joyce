@@ -36,11 +36,12 @@ Each document in the `records` collection:
 
 ## Recording a trip from a screenshot
 
-The screenshot is normally the internal "返台暨休假日程規劃表" form or the
-"休假紀錄查詢" system page. It may be cropped — read what's there and say so if a
-field is missing rather than guessing.
+Two kinds of screenshot come in — handle both, and tell the two apart by what's on
+screen rather than waiting for the user to label it:
 
-Map fields as follows:
+**1. The full form** — the internal "返台暨休假日程規劃表" form or the "休假紀錄查詢"
+system page. It may be cropped — read what's there and say so if a field is missing
+rather than guessing. Map fields as follows:
 
 - 姓名 → `staffName` (keep Chinese + English exactly as shown)
 - 廠區 → `site`
@@ -56,20 +57,39 @@ Map fields as follows:
   the form section just isn't filled in), leave it `null` and say so plainly** — do not
   treat a missing 述職日 as an error or ask the user to re-send the screenshot unless
   they want to.
+- 不進辦公室原因說明 (當地休假/他國休假/其它, e.g. 家庭因素, 喪葬事宜) → when
+  checked, this is *why* `debriefDate` is null — fold the reason into `note` and tell
+  the user plainly that no debrief day is expected this trip, not that one is missing.
 - 特殊假別 (病假/事假/喪假 etc.) → fold into `note`. The tool's 休假天數 formula
   only subtracts Sundays and the debrief day — it does NOT yet subtract special leave
   days. If the form's stated "本次休假X天" doesn't match what the tool will compute,
   say so to the user rather than silently forcing one number to match the other.
 
+**2. The system's own approval-notification email** (sender `sysAlert@makalot.com.tw`,
+displayed name "派駐人員休假系統通知"), screenshotted straight from Outlook. Subject
+reads「休假申請單 - 核准通知」or「派駐休假交通報支申請單 - 核准通知」; the body is a
+fixed template: "申請人 {staffName} 於 {填表時間} 填寫「休假申請單」... 休假N天[+病假
+M天]期間為 {start} ~ {end}". This only gives `staffName`, `returnDate` (start),
+`leaveEndDate` (end), and whatever leave-type note is in the subject line — there is no
+廠區, 述職日, 職稱, or phone number in it. Record what it gives you (`debriefDate:
+null`, since the email genuinely doesn't contain it — this is a data-availability gap,
+not the "normal, no debrief expected" case above) and say plainly that site/debrief/
+contact details are still pending a fuller screenshot. The user has chosen to forward
+these to Claude as soon as they arrive (see "Known gap" below for why) — treat that as
+the normal, expected way this skill receives new trips, not a stopgap.
+
 **Doc id:** `{returnDate}-{english-first-name}-{english-last-or-initial}`, lowercase,
 hyphenated (e.g. `2026-10-06-yuffie-yu`). Same staff name + same `returnDate` = update
-the existing doc (it's the same trip, more detail arrived). Same staff name + a
-*different* `returnDate` = a new trip (this is a recurring rotation — the same person
-returns many times over the year); use a distinguishing suffix if a doc id would
-otherwise collide (e.g. `-2`).
+the existing doc (it's the same trip, more detail arrived — this is exactly what
+happens when the approval-email screenshot above is later followed by the full form).
+Same staff name + a *different* `returnDate` = a new trip (this is a recurring
+rotation — the same person returns many times over the year); use a distinguishing
+suffix if a doc id would otherwise collide (e.g. `-2`).
 
 Write with the Artifact tool's `write_db` action (`set` for a new doc, `update` for
 filling in more detail on an existing one) against the URL above, collection `records`.
+`update` calls on this contract require `if_version` — `read_db get` the doc first if
+you don't already have its current version in hand from this conversation.
 
 ## Policy rules — established with the user, don't relitigate
 
@@ -108,16 +128,29 @@ create an Outlook event for the manager (via the Microsoft 365 connector,
   it's fine to create a new one and just tell the user there may now be two reminders
   for that debrief so they can delete the stale one.
 
-## Known gap: email-based auto-import
+## Known gap: can't backfill from the user's mailbox after the fact
 
 The company's leave system sends approval emails (sender `sysAlert@makalot.com.tw`,
-subject containing `休假申請單` or `派駐休假交通報支申請單` + `核准通知`) that carry
-姓名 + 休假起訖日期 (mappable to `staffName` / `returnDate` / `leaveEndDate`) but
-**not** 述職日, 廠區, 職稱, or phone numbers — those still require a screenshot from
-the user.
+subject containing `休假申請單` or `派駐休假交通報支申請單` + `核准通知`) — see the
+email-screenshot format above. Two things rule out quietly catching these on our own
+after they've arrived, rather than relying on the user to screenshot them:
 
-Automatically importing these emails on a recurring schedule was discussed with the
-user but is **not set up** — an attempted scheduled trigger for it was blocked by a
-permission classifier (recurring, unattended mailbox access + calendar writes need
-explicit user sign-off). If the user asks for a weekly/periodic mailbox sweep, treat it
-as a fresh request to confirm and set up, not something already running.
+1. **A recurring automated mailbox-scan trigger is not set up.** It was discussed and
+   an attempted scheduled trigger was blocked by a permission classifier (recurring,
+   unattended mailbox access + calendar writes need explicit user sign-off). Don't
+   assume one is running; if the user asks for a weekly/periodic sweep, treat it as a
+   fresh request to confirm and set up.
+2. **Even an on-demand search can come up empty for emails that are genuinely still
+   there** — just not reachable. The user files read notifications into a folder
+   named "012 驗布報告" that lives under "101個人資料夾-BAK" in their Outlook folder
+   pane. That naming ("個人資料夾" = Personal Folders) means it's a local `.pst`
+   archive file on their machine, not a folder in the Exchange Online mailbox — the
+   Microsoft 365 connector (Graph API) cannot see into a local PST at all, by
+   `folderName` lookup or by content search, because the mail has left the server
+   mailbox entirely once moved there. If `outlook_email_search` comes up empty for a
+   date range the user expects results in, check whether they've already filed those
+   emails away before concluding there's nothing to find.
+
+Given both of those, the user's chosen workflow is: **they forward/screenshot each
+approval notification to Claude as soon as it arrives**, before it gets filed away.
+Treat that as the normal, reliable path for this input type — not a workaround.
