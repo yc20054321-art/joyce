@@ -569,4 +569,5 @@ def main():
     print('wrote %s (%d + %d slides)' % (OUT, n0, len(names)))
 
 
-main()
+if __name__ == "__main__":
+    main()
