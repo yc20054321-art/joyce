@@ -103,7 +103,81 @@ def wrap(body):
     return OPEN + body + CLOSE
 
 
-EYE = "主副料採購 ‧ AI 導入評估　"
+EYE = "V6 C　"
+
+def slide_overview():
+    _id[0] = 1
+    s = header(EYE + "①", "AI 接手的是輸入端 — 量體、已導入的工具，以及它們接手到哪裡")
+
+    stats = [("25 類", "主副採已盤點的工作類型（14＋11）", NAVY),
+             ("10 位", "人力編制（主採 7＋副採 3）｜27R0 預算", NAVY),
+             ("12.6%", "主採 AI 可協助比例（占比加權）；副採待評估", BLUE),
+             ("17 項", "已導入 AI／人機協作功能（主採 12 ＋ 副採 5）", BLUE)]
+    gap = 0.24
+    sw = (CONTENT_W - gap * 3) / 4
+    for i, (num, lab, col) in enumerate(stats):
+        x = MARGIN_X + i * (sw + gap)
+        s += shape(x, 1.68, sw, 0.98, PANEL, "roundRect")
+        s += shape(x, 1.68, 0.06, 0.98, col)
+        s += tb(x + 0.24, 1.77, sw - 0.44, 0.40, [[run(num, 2100, 1, col)]])
+        s += tb(x + 0.24, 2.19, sw - 0.44, 0.38, [[run(lab, 900, 0, BODY)]], lnspc=122)
+
+    lx, lw = MARGIN_X, 5.85
+    rx, rw = MARGIN_X + 6.24, 5.85
+    panel_y, panel_h = 3.08, 2.74
+
+    def column(x, w, title, col, rows, note):
+        out = tb(x, 2.76, w, 0.26, [[run(title, 1250, 1, col)]])
+        out += shape(x, panel_y, w, panel_h, TINT if col is NAVY else PANEL, "roundRect")
+        out += shape(x, panel_y, 0.06, panel_h, col)
+        lab_w, body_w = 2.62, w - 0.48 - 2.62 - 0.14
+        y = panel_y + 0.14
+        for lab, body in rows:
+            h = max(th(lab, 9.5, lab_w, 124), th(body, 9.0, body_w, 124))
+            out += tb(x + 0.24, y, lab_w, h, [[run("· " + lab, 950, 1, col)]], anchor="ctr", lnspc=124)
+            out += tb(x + 0.24 + lab_w + 0.14, y, body_w, h,
+                      [[run(body, 900, 0, BODY)]], anchor="ctr", lnspc=124)
+            y += h + 0.06
+        out += tb(x + 0.24, y + 0.10, w - 0.48, th(note, 9.0, w - 0.48, 126),
+                  [[run(note, 900, 0, MUTED)]], lnspc=126)
+        return out
+
+    s += column(lx, lw, "主採｜已導入 12 項（8 已上線・2 試行中・2 測試中）", NAVY, [
+        ("ERP　2 項｜試行中", "開 PO（TOMS）、收料"),
+        ("出貨　3 項｜已上線", "出貨文件匯入 TA、Ship monitor 自動 key in 與回覆船務、第一次建立 TA"),
+        ("郵件　2 項｜已上線", "自動歸檔、依款號追蹤信件與擬信"),
+        ("報告　3 項｜已上線", "工廠 10% 驗布報告、開發樣布整理、異常款號整理"),
+        ("表格　2 項｜測試中", "BCI 更新提醒、PH3 交期表統整"),
+    ], "實績：ERP 開 PO 44 張（YAKJIN 22、NAMTEX 22）、收料 69 筆。十四類加權後的 AI 可協助比例為 12.6%"
+       "（該簡報自述約 10–15%）。")
+
+    s += column(rx, rw, "副採｜個人 Claude 5 項 ＋ 人機協作 12 類 41 件", BLUE, [
+        ("船務 booking KEY｜運行中", "每 30 分鐘掃信，KEY 入並回信；不確定就攔停"),
+        ("ACC 訂單回填｜固定規則", "訂單信明細回填 Excel 固定欄位"),
+        ("GU PO 命名歸檔｜工具已建", "依供應商簡稱、料號規則命名與歸檔"),
+        ("分廠副料計算｜固定規則", "總量鎖死已採購量，短少扣影響最小的廠"),
+        ("擬信／報價比較｜依需求使用", "含 Color-Size Breakdown；AI 出草稿，人工複核後使用"),
+    ], "10/27–11/3 一週內交辦 12 類 41 件（對內 30、對外 11），Queenie、Nicky、Vivian 三人皆已使用。"
+       "副採尚未做同口徑的加權估算。")
+
+    band_y, band_h = 5.96, 0.90
+    s += shape(MARGIN_X, band_y, CONTENT_W, band_h, REDBG, "roundRect")
+    s += shape(MARGIN_X, band_y, 0.06, band_h, RED)
+    s += tb(MARGIN_X + 0.24, band_y + 0.10, 4.30, 0.24,
+            [[run("⚠ 「人」還是決定 AI 所產生資訊的「決策者」", 1050, 1, RED)]])
+    s += tb(MARGIN_X + 4.66, band_y + 0.08, CONTENT_W - 4.90, 0.76, [
+        [run("主採 12 項中有 8 項明確註記「仍需人工」—— 人工核對、確認草稿後寄出、先確認通知、簽核後人工記錄；"
+             "完全免人工的 4 項全屬「產出報告」類。", 1000, 1, BODY)],
+        [run("副採的船務 booking 也設計成「不確定就攔停」。工具接手的是比對與填入 —— "
+             "要不要覆蓋、算不算核可、報告能不能寄出，仍然是人按下確認鍵。", 1000, 0, BODY)],
+    ], lnspc=128)
+
+    s += tb(MARGIN_X, SRC_Y, CONTENT_W, SRC_H, [[run(
+        "資料來源：面料採購 04–06 回饋（002 版，2026-11）；副採 AI 人機協作程度（2026-11-04）。"
+        "12.6% 為依表列占比加權之推算值，非工時實測；主採占比取自信箱關鍵字分類（樣本僅一人信箱可見範圍、不含微信）。",
+        850, 0, MUTED)]], lnspc=122)
+    return wrap(s)
+
 
 # ====================================================== ③ 職能影響與工時釋出
 def slide_impact():
@@ -372,6 +446,29 @@ def main():
     if os.path.isdir(UN):
         shutil.rmtree(UN)
     zipfile.ZipFile(BASE).extractall(UN)
+
+    # page ① is rebuilt from the 002 feedback docx + 副採 人機協作 mail
+    open(os.path.join(UN, 'ppt/slides/slide1.xml'), 'w', encoding='utf-8').write(slide_overview())
+    # page ② keeps the user's edits; only its eyebrow label changes
+    p2 = os.path.join(UN, 'ppt/slides/slide2.xml')
+    t2 = open(p2, encoding='utf-8').read().replace('主副料採購 ‧ AI 導入評估', 'V6 C')
+    # card titles: uniform 3.43" x 0.36" so the two-line ones stop overlapping the body,
+    # and bodies drop 0.11" to clear them (cards themselves end at 3.12 / 4.40)
+    for col_x in (0.84, 4.95, 9.06):
+        for ty, by in ((2.07, 2.35), (3.35, 3.63)):
+            for w, h in ((3.43, 0.22), (3.89, 0.42), (3.65, 0.16), (3.43, 0.42)):
+                t2 = t2.replace(
+                    '<a:off x="%s" y="%s"/><a:ext cx="%s" cy="%s"/>'
+                    % (emu(col_x), emu(ty), emu(w), emu(h)),
+                    '<a:off x="%s" y="%s"/><a:ext cx="%s" cy="%s"/>'
+                    % (emu(col_x), emu(ty), emu(3.43), emu(0.36)))
+            t2 = t2.replace(
+                '<a:off x="%s" y="%s"/><a:ext cx="%s" cy="%s"/>' % (emu(col_x), emu(by), emu(3.43), emu(0.64)),
+                '<a:off x="%s" y="%s"/><a:ext cx="%s" cy="%s"/>' % (emu(col_x), emu(by + 0.11), emu(3.43), emu(0.64)))
+    # card ④'s title also sat 0.02" high and 0.46" too wide
+    t2 = t2.replace('<a:off x="%s" y="%s"/><a:ext cx="%s" cy="%s"/>' % (emu(0.84), emu(3.33), emu(3.89), emu(0.42)),
+                    '<a:off x="%s" y="%s"/><a:ext cx="%s" cy="%s"/>' % (emu(0.84), emu(3.35), emu(3.43), emu(0.36)))
+    open(p2, 'w', encoding='utf-8').write(t2)
 
     existing = sorted(int(m) for f in os.listdir(os.path.join(UN, 'ppt/slides'))
                       for m in re.findall(r'slide(\d+)\.xml$', f))
