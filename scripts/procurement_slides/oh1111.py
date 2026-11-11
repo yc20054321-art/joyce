@@ -28,12 +28,12 @@ def slide_people():
     _id[0] = 1
     s = header(EYE + "①", "人力與費用控管方向 — 編制再減 2 人，費用用在開源與避免更大損")
 
-    # (數字, 卡片色, 底色, 前綴(與數字同色), 說明)
+    # 上排四張：三張人力＋TOMS 綜效。差旅費 +13 萬移入右側費用面板內。
+    # (數字, 卡片色, 底色, 說明前綴(與數字同色), 說明)
     stats = [("104 人", NAVY, PANEL, "", "2027 R0 原編制（含 6D 2 人）"),
              ("102 人", NAVY, PANEL, "", "R0 再減版調整後編制"),
              ("−2 人", GREEN, GREENBG, "", "6A −1（取消台籍新增員額）、6C 印尼端 −1"),
-             ("+13 萬", RED, REDBG, "", "2027 R0 差旅費較前期增加（NT$）"),
-             ("US$22 萬", GREEN, GREENBG, "≈ NT$660 萬　", "TOMS 轉入 V6 的團隊綜效，可節省 OH")]
+             ("US$-22 萬", GREEN, GREENBG, "≈ NT$671 萬　", "TOMS 轉入 V6 的團隊綜效，可節省 OH")]
     gap = 0.24
     sw = (CONTENT_W - gap * (len(stats) - 1)) / len(stats)
     for i, (num, col, bg, pre, lab) in enumerate(stats):
@@ -48,55 +48,80 @@ def slide_people():
 
     lx, lw = MARGIN_X, 5.85
     rx, rw = MARGIN_X + 6.24, 5.85
-    py, ph = 3.06, 2.74
+    py, bottom = 3.06, 5.94
 
-    s += tb(lx, 2.74, lw, 0.26, [[run("人力｜2027 R0 編制調整", 1250, 1, NAVY)]])
-    s += shape(lx, py, lw, ph, TINT, "roundRect")
-    s += shape(lx, py, 0.06, ph, NAVY)
-    y, iw = py + 0.16, lw - 0.48
-    for lab, txt in [
+    # ---- 人力面板
+    people = [
         ("原編制", "2027 年 R0 編制為 104 人（含 6D 2 人）。"),
         ("再減版", "調整為 102 人。"),
         ("6A", "減少 1 人 —— 取消原規劃之台籍新增員額。"),
         ("6C", "印尼端減少 1 人。"),
         ("員額移轉", "印尼籍 Irfan 員額轉移至品管部。"),
         ("TOMS 轉入", "TOMS 轉入 V6，團隊綜效成本預計可節省 OH 0.22／標打；"
-                    "2027 年以 100 萬標打估算，預計約 US$22 萬元（≈NT$660 萬）。"),
-    ]:
+                    "2027 年以 100 萬標打估算，預計約 US$22 萬元（≈NT$671 萬）。"),
+    ]
+    # ---- 費用面板：面板內嵌一張 +13 萬紅卡，其下兩個段落
+    CARD_W, CARD_H = 2.70, 0.92
+    money = [
+        ("1. 差旅費", "2027 R0 較前期增加約 NT$13 萬，來自兩項支援工作：台北特工赴印尼"
+                   "控管水洗，以及駐廠／Local Assistant 攜樣赴 JKT 與日本取得客戶核可。"
+                   "屬止損性支出 —— 見第 ③ 頁成本效益。", RED),
+        ("2. 樣品費", "樣品是開源之道。客人整體換設計師、銷售不佳，更應配合投入開發資源以增加商機；"
+                    "建議不列為壓縮對象。", RED),
+    ]
+
+    # 兩個面板等高，高度由較高的一側決定
+    # 需求高度＝上緣留白＋各列（最後一列不計其後的間距）＋下緣留白
+    need_l = 0.16
+    for lab, txt in people:
+        need_l += max(th(lab, 9.5, 1.30, 124), th(txt, 9.0, lw - 0.48 - 1.44, 124)) + 0.12
+    need_l += -0.12 + 0.16
+    need_r = 0.16 + CARD_H + 0.18
+    for lab, txt, _c in money:
+        need_r += th(lab, 10.0, rw - 0.48, 124) + 0.06 + th(txt, 9.0, rw - 0.48, 128) + 0.26
+    need_r += -0.26 + 0.16
+    need = max(need_l, need_r)
+    ph = min(bottom - py, max(2.74, need))
+    if need > bottom - py:
+        print('  ! 面板需要 %.2f"，可用 %.2f"' % (need, bottom - py))
+
+    s += tb(lx, 2.74, lw, 0.26, [[run("人力｜2027 R0 編制調整", 1250, 1, NAVY)]])
+    s += shape(lx, py, lw, ph, TINT, "roundRect")
+    s += shape(lx, py, 0.06, ph, NAVY)
+    y, iw = py + 0.16, lw - 0.48
+    for lab, txt in people:
         h = max(th(lab, 9.5, 1.30, 124), th(txt, 9.0, iw - 1.44, 124))
         s += tb(lx + 0.24, y, 1.30, h, [[run("· " + lab, 950, 1, NAVY)]], anchor="ctr", lnspc=124)
         s += tb(lx + 0.24 + 1.44, y, iw - 1.44, h, [[run(txt, 900, 0, BODY)]], anchor="ctr", lnspc=124)
         y += h + 0.12
-    if y > py + ph:
-        print('  ! 人力面板內容到 %.2f"，面板底部 %.2f"' % (y, py + ph))
 
     s += tb(rx, 2.74, rw, 0.26, [[run("費用｜兩個方向", 1250, 1, BLUE)]])
     s += shape(rx, py, rw, ph, PANEL, "roundRect")
     s += shape(rx, py, 0.06, ph, BLUE)
     y, iw = py + 0.16, rw - 0.48
-    for lab, txt, col in [
-        # 對調後差旅費那一頁變成第 ③ 頁，原本的「見次頁」已不成立
-        ("1. 差旅費", "2027 R0 較前期增加約 NT$13 萬，來自兩項支援工作：台北特工赴印尼"
-                   "控管水洗，以及駐廠／Local Assistant 攜樣赴 JKT 與日本取得客戶核可。"
-                   "屬止損性支出 —— 見第 ③ 頁成本效益。", BLUE),
-        ("2. 樣品費", "樣品是開源之道。客人整體換設計師、銷售不佳，更應配合投入開發資源以增加商機；"
-                    "建議不列為壓縮對象。", RED),
-    ]:
+    cx = rx + 0.24
+    s += shape(cx, y, CARD_W, CARD_H, REDBG, "roundRect")
+    s += shape(cx, y, 0.06, CARD_H, RED)
+    s += tb(cx + 0.22, y + 0.09, CARD_W - 0.40, 0.40, [[run("+13 萬", 2100, 1, RED)]])
+    s += tb(cx + 0.22, y + 0.51, CARD_W - 0.40, 0.34,
+            [[run("2027 R0 差旅費較前期增加（NT$）", 900, 0, BODY)]], lnspc=122)
+    y += CARD_H + 0.18
+    for lab, txt, col in money:
         lh = th(lab, 10.0, iw, 124)
         bh = th(txt, 9.0, iw, 128)
-        s += tb(rx + 0.24, y, iw, lh, [[run(lab, 1000, 1, col)]], lnspc=124)
-        s += tb(rx + 0.24, y + lh + 0.06, iw, bh, [[run(txt, 900, 0, BODY)]], lnspc=128)
+        s += tb(cx, y, iw, lh, [[run(lab, 1000, 1, col)]], lnspc=124)
+        s += tb(cx, y + lh + 0.06, iw, bh, [[run(txt, 900, 0, BODY)]], lnspc=128)
         y += lh + bh + 0.26
 
     s += takeaway(6.10, [
         run("→ ", 1300, 1, NAVY),
-        run("人力已按 R0 再減版下修 2 人，TOMS 轉入另有約 US$22 萬（≈NT$660 萬）綜效節省；費用面的增加集中在", 1300, 1, INK),
+        run("人力已按 R0 再減版下修 2 人，TOMS 轉入另有約 US$22 萬（≈NT$671 萬）綜效節省；費用面的增加集中在", 1300, 1, INK),
         run("「避免更大損失」與「開源」", 1300, 1, RED),
         run("兩類，非一般性成長。", 1300, 1, INK),
     ])
     s += src("資料來源：人力及費用相關（2026-11）。金額為預算與實際支出之彙整值，正式引用前請管理部複核。"
-             "TOMS 綜效節省為 0.22 USD／標打 × 2027 年 100 萬標打之推估（≈US$22 萬），NT$ 以 1:30 換算；"
-             "次頁 2027 R0 預算採匯率 30.50，按該匯率為 NT$671 萬。待確認是否已反映於上述 R0 編制與預算數字。")
+             "TOMS 綜效節省為 0.22 USD／標打 × 2027 年 100 萬標打之推估（≈US$22 萬），"
+             "NT$ 以次頁 2027 R0 預算匯率 30.50 換算為 NT$671 萬。待確認是否已反映於上述 R0 編制與預算數字。")
     return wrap(s)
 
 
