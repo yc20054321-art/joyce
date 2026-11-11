@@ -15,6 +15,9 @@ from gen2 import (tb, shape, run, header, takeaway, wrap, th, _id,
 SRC_DIR, WORK, OUT = 'oh_un2', 'oh_work', 'oh1111_out.pptx'
 EYE = "V6 ‧ GU 04 OH 控管方向　"
 
+# 數字卡改用「紅＝不利／綠＝有利」的號誌色，綠色為本版新增
+GREEN, GREENBG = "1E7A4D", "EDF6F1"
+
 
 def src(text):
     return tb(MARGIN_X, SRC_Y, CONTENT_W, SRC_H, [[run(text, 850, 0, MUTED)]], lnspc=122)
@@ -25,19 +28,23 @@ def slide_people():
     _id[0] = 1
     s = header(EYE + "①", "人力與費用控管方向 — 編制再減 2 人，費用用在開源與避免更大損")
 
-    stats = [("104 人", "2027 R0 原編制（含 6D 2 人）", NAVY),
-             ("102 人", "R0 再減版調整後編制", NAVY),
-             ("−2 人", "6A −1（取消台籍新增員額）、6C 印尼端 −1", RED),
-             ("+13 萬", "2027 R0 差旅費較前期增加（NT$）", BLUE),
-             ("US$22 萬", "TOMS 轉入 V6 的團隊綜效，2027 年預估可節省 OH", NAVY)]
+    # (數字, 卡片色, 底色, 前綴(與數字同色), 說明)
+    stats = [("104 人", NAVY, PANEL, "", "2027 R0 原編制（含 6D 2 人）"),
+             ("102 人", NAVY, PANEL, "", "R0 再減版調整後編制"),
+             ("−2 人", GREEN, GREENBG, "", "6A −1（取消台籍新增員額）、6C 印尼端 −1"),
+             ("+13 萬", RED, REDBG, "", "2027 R0 差旅費較前期增加（NT$）"),
+             ("US$22 萬", GREEN, GREENBG, "≈ NT$660 萬　", "TOMS 轉入 V6 的團隊綜效，可節省 OH")]
     gap = 0.24
     sw = (CONTENT_W - gap * (len(stats) - 1)) / len(stats)
-    for i, (num, lab, col) in enumerate(stats):
+    for i, (num, col, bg, pre, lab) in enumerate(stats):
         x = MARGIN_X + i * (sw + gap)
-        s += shape(x, 1.68, sw, 0.98, REDBG if col is RED else PANEL, "roundRect")
+        s += shape(x, 1.68, sw, 0.98, bg, "roundRect")
         s += shape(x, 1.68, 0.06, 0.98, col)
         s += tb(x + 0.24, 1.77, sw - 0.44, 0.40, [[run(num, 2100, 1, col)]])
-        s += tb(x + 0.24, 2.19, sw - 0.44, 0.38, [[run(lab, 900, 0, BODY)]], lnspc=122)
+        rs = ([run(pre, 900, 1, col)] if pre else []) + [run(lab, 900, 0, BODY)]
+        if th(pre + lab, 9.0, sw - 0.44, 122) > 0.38:
+            print('  ! 卡片說明超出 0.38"：%s' % (pre + lab)[:30])
+        s += tb(x + 0.24, 2.19, sw - 0.44, 0.38, [rs], lnspc=122)
 
     lx, lw = MARGIN_X, 5.85
     rx, rw = MARGIN_X + 6.24, 5.85
@@ -54,7 +61,7 @@ def slide_people():
         ("6C", "印尼端減少 1 人。"),
         ("員額移轉", "印尼籍 Irfan 員額轉移至品管部。"),
         ("TOMS 轉入", "TOMS 轉入 V6，團隊綜效成本預計可節省 OH 0.22／標打；"
-                    "2027 年以 100 萬標打估算，預計約 US$22 萬元。"),
+                    "2027 年以 100 萬標打估算，預計約 US$22 萬元（≈NT$660 萬）。"),
     ]:
         h = max(th(lab, 9.5, 1.30, 124), th(txt, 9.0, iw - 1.44, 124))
         s += tb(lx + 0.24, y, 1.30, h, [[run("· " + lab, 950, 1, NAVY)]], anchor="ctr", lnspc=124)
@@ -83,13 +90,13 @@ def slide_people():
 
     s += takeaway(6.10, [
         run("→ ", 1300, 1, NAVY),
-        run("人力已按 R0 再減版下修 2 人，TOMS 轉入另有約 US$22 萬綜效節省；費用面的增加集中在", 1300, 1, INK),
+        run("人力已按 R0 再減版下修 2 人，TOMS 轉入另有約 US$22 萬（≈NT$660 萬）綜效節省；費用面的增加集中在", 1300, 1, INK),
         run("「避免更大損失」與「開源」", 1300, 1, RED),
         run("兩類，非一般性成長。", 1300, 1, INK),
     ])
     s += src("資料來源：人力及費用相關（2026-11）。金額為預算與實際支出之彙整值，正式引用前請管理部複核。"
-             "TOMS 綜效節省為 0.22 USD／標打 × 2027 年 100 萬標打之推估（≈US$22 萬），"
-             "待確認是否已反映於上述 R0 編制與預算數字。")
+             "TOMS 綜效節省為 0.22 USD／標打 × 2027 年 100 萬標打之推估（≈US$22 萬），NT$ 以 1:30 換算；"
+             "次頁 2027 R0 預算採匯率 30.50，按該匯率為 NT$671 萬。待確認是否已反映於上述 R0 編制與預算數字。")
     return wrap(s)
 
 
